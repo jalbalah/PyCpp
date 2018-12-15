@@ -14,4 +14,9 @@ if __name__ == '__main__':
         with open(pyf) as rf:
             tupl = Transpile(rf.readlines())
         with open(pyf.replace('.py', '.cpp'), 'w') as wf:
-            wf.write(tupl[1])
+            wf.write(tupl)
+
+    for f in py_files:
+        build_cmd = 'g++ {} -o {}'.format(f.replace('.py', '.cpp'), f.replace('.py', ''))
+        print(build_cmd)
+        # os.system(build_cmd)
