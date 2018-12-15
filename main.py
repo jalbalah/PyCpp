@@ -13,7 +13,5 @@ if __name__ == '__main__':
     for pyf in py_files:
         with open(pyf) as rf:
             tupl = Transpile(rf.readlines())
-        with open(pyf.replace('.py', '.h'), 'w') as wf:
-            wf.write(tupl[0])
         with open(pyf.replace('.py', '.cpp'), 'w') as wf:
             wf.write(tupl[1])

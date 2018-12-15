@@ -5,12 +5,12 @@ class X
 {
     X(a,b)
     {
-        this->a = a
-        this->b = b
+        this->a = a;
+        this->b = b;
 
     }
     x()
     {
-        print(1)
+        std::cout << 1 << std::endl;
     }
 }

@@ -5,7 +5,6 @@ class Transpile:
     
     def __new__(cls, line):
         """ return tuple of .h and .cpp strings to write to file """
-        h = ''
         cpp = ''
 
         indent_stack = []
@@ -52,10 +51,20 @@ class Transpile:
                     + func_name \
                     + '(' + ','.join([str(x) for x in args]) + ')'
 
+            if 'print(' in lstrip:
+                line[c] = line[c].replace('print(', 'std::cout << ')
+                line[c] = line[c][0:line[c].rfind(')')] + " << std::endl;"
 
-        h = '\n'.join(line)
-        print(h)
-        return [h, cpp]
+            if line[c] and line[c][-1] != ';' and ')' != line[c].strip()[-1]:
+                if not ('{' in line[c] or '}' in line[c]
+                        or 'def' in line[c] or 'class' in line[c]):
+                    line[c] += ';'
+
+
+
+        cpp = '\n'.join(line)
+        print(cpp)
+        return cpp
 
     @staticmethod
     def get_num_indent(line):
