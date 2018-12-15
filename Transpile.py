@@ -71,7 +71,7 @@ class Transpile:
                         pvt = 'private:\n'
                     for mbr in private_members:
                         typ, libs_to_add = cls.get_type(mbr[1], libs_to_add)
-                        pvt += '{} {};\n'.format(typ,  mbr[0]);
+                        pvt += '    {} {};\n'.format(typ,  mbr[0]);
                     if private_members:
                         line[c] = pvt + line[c]
 

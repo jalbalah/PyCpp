@@ -11,8 +11,8 @@ class X
         std::cout << 1 << std::endl;
     }
 private:
-int a;
-float b;
+    int a;
+    float b;
 };
 int main()
 {
