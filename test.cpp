@@ -4,10 +4,11 @@ class X
 public:
     X()
     {
-        std::cout << "initializing, dude" << std::endl;
+        std::cout << "Default initializer" << std::endl;
     }
     X(auto a, auto b)
     {
+        std::cout << "Another initializer" << std::endl;
         this->a = a;
         this->b = b;
     }
@@ -17,6 +18,7 @@ public:
 };
 int main()
 {
-    X x(1, 2.0);
-    std::cout << x.a << std::endl;
+    X x0();
+    X x1(1, 2.0);
+    std::cout << x1.a << std::endl;
 }

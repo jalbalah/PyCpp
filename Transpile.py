@@ -28,15 +28,16 @@ class Transpile:
                     line[c][0:line[c].find('def')] \
                     + class_name[-1] \
                     + '(' + ', '.join(['auto ' + str(x) for x in args]) + ')'
-                if 'self' in line[c + 2]:
-                    c += 2
-                    while 'self' in line[c]:
-                        line[c] = line[c].replace('self.', 'this->')
-                        i = line[c].find('->') + 2
-                        i2 = line[c].find('=') + 1
-                        private_members.append((line[c][i:line[c].find(' ', i)],
-                                                line[c][i2::]))
-                        c += 1
+                c += 2
+                c2 = c
+                while '}' not in line[c2] and c2 < len(line):
+                    if 'self.' in line[c2]:
+                        line[c2] = line[c2].replace('self.', 'this->')
+                        i = line[c2].find('->') + 2
+                        i2 = line[c2].find('=') + 1
+                        private_members.append((line[c2][i:line[c2].find(' ', i)],
+                                                line[c2][i2::]))
+                    c2 += 1
             elif lstrip.startswith('def'):
                 args = Transpile.get_args(line, c)
                 func_name = line[c][line[c].find('def ') + 4:line[c].find('(')]
