@@ -1,24 +1,28 @@
 #include<iostream>
+#include<vector>
+// defining a C++ object X
 class X
 {
 public:
-    X()
-    {
-        std::cout << "Default initializer" << std::endl;
-    }
     X(auto a, auto b)
     {
         std::cout << "Another initializer" << std::endl;
+        // initialize object member variables;
         this->a = a;
-        this->b = b;
+        this->b = b + 1;
+        // array with type passed (i.e. int, float, string)
+        this->arr = std::vector<int>();
     }
 
     float a;
     float b;
+    std::vector<int> arr;
 };
 int main()
 {
-    X x0();
+    // instantiating C++ objects;
     X x1(1, 2.0);
     std::cout << x1.a << std::endl;
+    // for x in range(0, 10):;
+    //     print(1)
 }

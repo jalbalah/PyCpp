@@ -13,6 +13,7 @@ class Transpile:
         in_class = [False, -1]
         in_class_done = True
         private_members = []
+
         for c in range(0, len(line)):
             lstrip = line[c].strip().replace(' ', '')
             if lstrip.startswith('class'):
@@ -47,6 +48,18 @@ class Transpile:
                     + '(' + ','.join([str(x) for x in args]) + ')'
             elif lstrip.startswith('if__name__=="__main__":'):
                 line[c] = 'int main()'
+            elif lstrip.startswith('print('):
+                line[c] = line[c].replace('print(', 'std::cout << ')
+                line[c] = line[c][0:line[c].rfind(')')] + " << std::endl;"
+                libs_to_add.add('iostream')
+            elif lstrip.startswith('for ') or lstrip.startswith('for('):
+                i = line[c].find(' in ') + 4
+                var = line[c][line[c].find('for') + 3:i - 4].replace('(', '')
+                rnge = line[c][i:line[c].find(':')]
+            elif line[c].strip().endswith(']'):
+                typ = line[c][line[c].find('[') + 1:line[c].find(']')]
+                line[c] = line[c][0:line[c].find('[') + 1] + line[c][line[c].find(']')::]
+                line[c] = line[c].replace('[]', 'std::vector<{}>()'.format(typ))
 
             if in_class[0]:
                 if '{' in line[c] and not in_class_done:
@@ -64,23 +77,9 @@ class Transpile:
                         if private_members:
                             line[c] = pvt + line[c]
 
-            if 'print(' in lstrip:
-                line[c] = line[c].replace('print(', 'std::cout << ')
-                line[c] = line[c][0:line[c].rfind(')')] + " << std::endl;"
-                libs_to_add.add('iostream')
+            line = cls.add_semicolon(line, c)
+            line = cls.instantiation(line, c, class_name)
 
-            if line[c] and line[c][-1] != ';' and ')' != line[c].strip()[-1]:
-                if not ('{' in line[c] or '}' in line[c]
-                        or 'def' in line[c] or 'class' in line[c]):
-                    line[c] += ';'
-
-            for clas in class_name[1::]:
-                if clas in line[c] and '=' in line[c]:
-                    i = len(line[c]) - len(line[c].lstrip())
-                    stack_init = line[c].lstrip()
-                    var_name = stack_init[0:stack_init.find(' ')]
-                    args = stack_init[stack_init.find('('):stack_init.find(')') + 1].strip()
-                    line[c] = i * ' ' + clas + ' ' + var_name + args + ';'
         for lib in libs_to_add:
             line.insert(0, '#include<{}>'.format(lib))
 
@@ -111,6 +110,25 @@ class Transpile:
         return line
 
     @staticmethod
+    def add_semicolon(line, c):
+        if line[c] and line[c][-1] != ';' and (')' != line[c].strip()[-1] or '=' in line[c]):
+            if not ('{' in line[c] or '}' in line[c]
+                    or 'def' in line[c] or 'class' in line[c]):
+                line[c] += ';'
+        return line
+
+    @staticmethod
+    def instantiation(line, c, class_name):
+        for clas in class_name[1::]:
+            if clas in line[c] and '=' in line[c]:
+                i = len(line[c]) - len(line[c].lstrip())
+                stack_init = line[c].lstrip()
+                var_name = stack_init[0:stack_init.find(' ')]
+                args = stack_init[stack_init.find('('):stack_init.find(')') + 1].strip()
+                line[c] = i * ' ' + clas + ' ' + var_name + args + ';'
+        return line
+
+    @staticmethod
     def get_num_indent(line):
         for i in range(4 * 8, -1, -4):
             indent = ' ' * i
@@ -126,6 +144,9 @@ class Transpile:
     @staticmethod
     def get_type(x, libs_to_add):
         # st()
+        if x.strip()[0] == '[' and x.strip()[-1] == ']':
+            libs_to_add.add('vector')
+            return ['std::vector<{}>'.format(x[x.find('[') + 1:x.find(']')]), libs_to_add]
         try:
             int(x)
             if '.' in x:
@@ -137,4 +158,3 @@ class Transpile:
         except Exception:
             libs_to_add.add('string')
             return ['std::string', libs_to_add]
-

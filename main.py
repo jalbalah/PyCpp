@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
     for pyf in py_files:
         with open(pyf) as rf:
-            tupl = Transpile(rf.readlines())
+            tupl = Transpile(rf.readlines())  # rf.read().split('\n')
         with open(pyf.replace('.py', '.cpp'), 'w') as wf:
             wf.write(tupl)
 
