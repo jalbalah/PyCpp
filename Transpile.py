@@ -6,44 +6,28 @@ class Transpile:
     def __new__(cls, line):
         """ return tuple of .h and .cpp strings to write to file """
         cpp = ''
+        line = Transpile.get_indented(line)
 
-        indent_stack = []
-        line.append('END')
-        for c in range(0, len(line)):
-            line[c] = line[c].replace("'", '"')
-            line[c] = line[c].rstrip()
-            if line[c].strip() == '':
-                line[c] = ''
-            else:
-                indent = cls.get_num_indent(line[c])
-                if indent and (not indent_stack or indent > indent_stack[-1]):
-                    indent_stack.append(indent)
-                    line[c] = (indent_stack[-1] - 4) * ' ' + '{\n' + line[c]
-                elif indent_stack and indent < indent_stack[-1]:
-                    while indent_stack and indent < indent_stack[-1]:
-                        line[c - 1] += '\n' + (indent_stack[-1] - 4) * ' ' + '}'
-                        del indent_stack[-1]
-        line[-1] = line[-1].replace('END', '')
-
-        line = '\n'.join(line).split('\n')
-
-        class_name = ''
+        class_name = ['']
         libs_to_add = set({})
         in_class = [False, -1]
+        in_class_done = True
         private_members = []
         for c in range(0, len(line)):
             lstrip = line[c].strip().replace(' ', '')
             if lstrip.startswith('class'):
                 in_class[0] = True
-                in_class[1] = cls.get_num_indent(line[c])
-                class_name = line[c][line[c].find('class ') + 6:-1]
-                line[c] = 'class {}'.format(class_name)
+                in_class_done = False
+                in_class[1] = Transpile.get_num_indent(line[c])
+                cn = line[c][line[c].find('class ') + 6::].replace(":", "")
+                class_name.append(cn)
+                line[c] = 'class {}'.format(class_name[-1])
             elif lstrip.startswith('def__init__'):
-                args = cls.get_args(line, c)
+                args = Transpile.get_args(line, c)
                 line[c] = \
                     line[c][0:line[c].find('def')] \
-                    + class_name \
-                    + '(' + ','.join(['auto ' + str(x) for x in args]) + ')'
+                    + class_name[-1] \
+                    + '(' + ', '.join(['auto ' + str(x) for x in args]) + ')'
                 if 'self' in line[c + 2]:
                     c += 2
                     while 'self' in line[c]:
@@ -54,7 +38,7 @@ class Transpile:
                                                 line[c][i2::]))
                         c += 1
             elif lstrip.startswith('def'):
-                args = cls.get_args(line, c)
+                args = Transpile.get_args(line, c)
                 func_name = line[c][line[c].find('def ') + 4:line[c].find('(')]
                 line[c] = \
                     line[c][0:line[c].find('def')] \
@@ -63,17 +47,21 @@ class Transpile:
             elif lstrip.startswith('if__name__=="__main__":'):
                 line[c] = 'int main()'
 
-            if in_class[0] and '}' in line[c]:
-                if cls.get_num_indent(line[c]) == in_class[1]:
-                    in_class[0] = False
-                    line[c] += ';'
-                    if private_members:
-                        pvt = 'private:\n'
-                    for mbr in private_members:
-                        typ, libs_to_add = cls.get_type(mbr[1], libs_to_add)
-                        pvt += '    {} {};\n'.format(typ,  mbr[0]);
-                    if private_members:
-                        line[c] = pvt + line[c]
+            if in_class[0]:
+                if '{' in line[c] and not in_class_done:
+                    line[c] += '\npublic:'
+                    in_class_done = True
+                elif '}' in line[c]:
+                    if Transpile.get_num_indent(line[c]) == in_class[1]:
+                        in_class[0] = False
+                        line[c] += ';'
+                        if private_members:
+                            pvt = '\n'
+                        for mbr in private_members:
+                            typ, libs_to_add = Transpile.get_type(mbr[1], libs_to_add)
+                            pvt += '    {} {};\n'.format(typ,  mbr[0]);
+                        if private_members:
+                            line[c] = pvt + line[c]
 
             if 'print(' in lstrip:
                 line[c] = line[c].replace('print(', 'std::cout << ')
@@ -84,12 +72,42 @@ class Transpile:
                 if not ('{' in line[c] or '}' in line[c]
                         or 'def' in line[c] or 'class' in line[c]):
                     line[c] += ';'
+
+            for clas in class_name[1::]:
+                if clas in line[c] and '=' in line[c]:
+                    i = len(line[c]) - len(line[c].lstrip())
+                    stack_init = line[c].lstrip()
+                    var_name = stack_init[0:stack_init.find(' ')]
+                    args = stack_init[stack_init.find('('):stack_init.find(')') + 1].strip()
+                    line[c] = i * ' ' + clas + ' ' + var_name + args + ';'
         for lib in libs_to_add:
             line.insert(0, '#include<{}>'.format(lib))
 
         cpp = '\n'.join(filter(None, line))
         print(cpp)
         return cpp
+
+    @staticmethod
+    def get_indented(line):
+        indent_stack = []
+        line.append('END')
+        for c in range(0, len(line)):
+            line[c] = line[c].replace("'", '"').replace('#', '//')
+            line[c] = line[c].rstrip()
+            if line[c].strip() == '':
+                line[c] = ''
+            else:
+                indent = Transpile.get_num_indent(line[c])
+                if indent and (not indent_stack or indent > indent_stack[-1]):
+                    indent_stack.append(indent)
+                    line[c] = (indent_stack[-1] - 4) * ' ' + '{\n' + line[c]
+                elif indent_stack and indent < indent_stack[-1]:
+                    while indent_stack and indent < indent_stack[-1]:
+                        line[c - 1] += '\n' + (indent_stack[-1] - 4) * ' ' + '}'
+                        del indent_stack[-1]
+        line[-1] = line[-1].replace('END', '')
+        line = '\n'.join(line).split('\n')
+        return line
 
     @staticmethod
     def get_num_indent(line):
@@ -118,3 +136,4 @@ class Transpile:
         except Exception:
             libs_to_add.add('string')
             return ['std::string', libs_to_add]
+

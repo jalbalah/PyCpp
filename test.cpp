@@ -1,20 +1,22 @@
 #include<iostream>
 class X
 {
-    X(auto a,auto b)
+public:
+    X()
     {
-        this->a = 1;
-        this->b = 2.0;
+        std::cout << "initializing, dude" << std::endl;
     }
-    x()
+    X(auto a, auto b)
     {
-        std::cout << 1 << std::endl;
+        this->a = a;
+        this->b = b;
     }
-private:
-    int a;
+
+    float a;
     float b;
 };
 int main()
 {
-    std::cout << "hi" << std::endl;
+    X x(1, 2.0);
+    std::cout << x.a << std::endl;
 }
