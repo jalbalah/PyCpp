@@ -16,6 +16,6 @@ if __name__ == '__main__':
         with open(pyf.replace('.py', '_out.cpp'), 'w') as wf:
             wf.write(tupl)
 
-    build_cmd = 'g++ your_code_out.cpp -o your_code_out -g -O0'
+    build_cmd = 'g++ code_out.cpp -o code_out -g -O0'
     print(build_cmd)
     os.system(build_cmd)
