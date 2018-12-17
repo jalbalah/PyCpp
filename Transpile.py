@@ -16,8 +16,8 @@ class Transpile:
         private_members = []
 
         for c in range(0, len(line)):
-            lstrip = line[c].strip().replace(' ', '')
-            if lstrip.startswith('//'):
+            lstrip = line[c].lstrip().replace(' ', '')
+            if '//' in line[c]:
                 pass
             else:
                 if lstrip.startswith('class'):
@@ -48,9 +48,12 @@ class Transpile:
                     args = Transpile.get_args(line, c)
                     func_name = line[c][line[c].find('def ') + 4:line[c].find('(')]
                     line[c] = \
-                        line[c][0:line[c].find('def')] \
-                        + func_name \
-                        + '(' + ','.join([str(x) for x in args]) + ')'
+                        line[c][0:line[c].find('def')] + \
+                        func_name + \
+                        '(' + ','.join([str(x) for x in args]) + ')'
+                    return_type = 'void ' if '{' in line[c + 1] else ''
+                    i = line[c].find(line[c].strip()[0])
+                    line[c] = line[c][0:i] + return_type + line[c][i::]
                 elif lstrip.startswith('if__name__=="__main__":'):
                     line[c] = 'int main()'
                 elif lstrip.startswith('print('):
@@ -111,9 +114,10 @@ class Transpile:
                                 pvt += '    {} {};\n'.format(typ,  mbr[0]);
                             if private_members:
                                 line[c] = pvt + line[c]
-
+                            private_members = []
                 line = cls.add_semicolon(line, c)
                 line = cls.instantiation(line, c, class_name)
+                line = cls.get_replacements(line)
                 line
 
         for lib in libs_to_add:
@@ -124,12 +128,19 @@ class Transpile:
         return cpp
 
     @staticmethod
+    def get_replacements(line):
+        for c in range(0, len(line)):
+            if '#' not in line[c]:
+                line[c] = line[c].replace("'", '"').replace('append', 'push_back').replace('pass', ';')
+            else:
+                line[c] = line[c].replace('#', '//')
+        return line
+
+    @staticmethod
     def get_indented(line):
         indent_stack = []
         line.append('END')
         for c in range(0, len(line)):
-            line[c] = line[c].replace("'", '"').replace('#', '//').replace('append', 'push_back') \
-                .replace('pass', ';')
             line[c] = line[c].rstrip()
             if line[c].strip() == '':
                 line[c] = ''
@@ -148,7 +159,8 @@ class Transpile:
 
     @staticmethod
     def add_semicolon(line, c):
-        if line[c] and line[c][-1] != ';' and (')' != line[c].strip()[-1] or ('=' in line[c] or '.' in line[c]) and not ';' in line[c]):
+        not_in = lambda x: x not in line[c]
+        if line[c] and not_in(';') and not_in('void') and not_in('int'):
             if not ('{' in line[c] or '}' in line[c]
                     or 'def' in line[c] or 'class' in line[c]):
                 line[c] += ';'

@@ -14,23 +14,30 @@ class X:
         # array with type passed (i.e. int, float, string)
         self.arr = [int]
 
+class Test:
+    def run_all_tests(self):
+        test_instantiation()
+        test_loop()
+        test_arraylist()
+        test_iterator()
+    def test_instantiation(self):
+        # instantiating C++ objects
+        x1 = X(1, 2.0)
+        print(x1.a, "\n")
+    def test_loop(self):
+        # range loop
+        for i in range(10, 0, -1):
+            print(i)
+        print('liftoff!', '\n')
+    def test_arraylist(self):
+        for i in range(0, 10000):
+            x1.arr.append(i)
+    def test_iterator(self):
+        # iterator to loop through container
+        for i in x1.arr:
+            if i > 9995:
+                print(i)
 
 if __name__ == '__main__':
-
-    # instantiating C++ objects
-    x1 = X(1, 2.0)
-    print(x1.a, "\n")
-
-    # range loop
-    for i in range(10, 0, -1):
-        print(i)
-    print('liftoff!', '\n')
-
-    for i in range(0, 10000):
-        x1.arr.append(i)
-
-    # iterator to loop through container
-
-    for i in x1.arr:
-        if i > 9995:
-            print(i)
+    t = Test()
+    t.run_all_tests()
