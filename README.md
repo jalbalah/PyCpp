@@ -9,6 +9,7 @@ Update test.cpp and run main.py to generate
 test.cpp again. Run ./test to run test.cpp. 
 
 Features:
+- basic class
 - member variables
 - static variables
 - if statements
