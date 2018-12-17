@@ -5,7 +5,15 @@ See test.py, from which test.cpp was
 transpiled. There are examples of how
 to implement object oriented algorithms
 in pythonic code that map directly to C++. 
+Update test.cpp and run main.py to generate
+test.cpp again. Run ./test to run test.cpp. 
 
+Features:
+- member variables
+- static variables
+- if statements
+- for loop
+- iterate through vector
 
 The goal of PyCpp is to write code with 
 minimally-capable syntax and language nuance.
