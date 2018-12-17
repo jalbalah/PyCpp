@@ -20,10 +20,16 @@ if __name__ == '__main__':
     print(x1.a)
 
     # range loop
-    for i in range(0, 10):
+    for i in range(10, 0):
         print(i)
     print('liftoff!')
 
+    for it in range(0, 10, 2):
+        pass
 
-
-    # iterator loop
+    # iterator to loop through container
+    x1.arr.append(1)
+    x1.arr.append(2)
+    x1.arr.append(3)
+    for i in x1.arr:
+        print(i)

@@ -1,5 +1,5 @@
-#include<vector>
 #include<iostream>
+#include<vector>
 // defining a C++ object X
 class X
 {
@@ -10,7 +10,7 @@ public:
         // initialize object member variables
         this->a = a;
         this->b = b + 1;
-        // array with type passed (i.e. int, float, string)
+        // array with type ;ed (i.e. int, float, string)
         this->arr = std::vector<int>();
     }
 
@@ -24,10 +24,21 @@ int main()
     X x1(1, 2.0);
     std::cout << x1.a << std::endl;
     // range loop
-    for(auto i = 0; i != 10; ++i)
+    for(auto i = 10; i != 0; --i)
     {
-        std::cout << i<< " " <<  "hi" << std::endl;
+        std::cout << i << std::endl;
     }
     std::cout << "liftoff!" << std::endl;
-    // iterator loop
+    for(auto it = 0; it != 10; it += 2)
+    {
+        ;
+    }
+    // iterator to loop through container
+    x1.arr.push_back(1);
+    x1.arr.push_back(2);
+    x1.arr.push_back(3);
+    for(auto it = x1.arr.begin(); it != x1.arr.end(); ++it)
+    {    auto i = *it;
+        std::cout << i << std::endl;
+    }
 }

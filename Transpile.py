@@ -65,7 +65,7 @@ class Transpile:
                     typ = line[c][line[c].find('[') + 1:line[c].find(']')]
                     line[c] = line[c][0:line[c].find('[') + 1] + line[c][line[c].find(']')::]
                     line[c] = line[c].replace('[]', 'std::vector<{}>()'.format(typ))
-                elif lstrip.startswith('for'):
+                elif lstrip.startswith('for') and 'range' in lstrip:
                     i = line[c].find(' in ') + 4
                     var = line[c][line[c].find('for') + 3:i - 4].replace('(', '').strip()
                     rnge = line[c][i:line[c].find(':')]
@@ -77,6 +77,14 @@ class Transpile:
                     elif len(rnge) == 3:
                         line[c] = line[c][0:line[c].find('f')] + \
                                   'for(auto {} = {}; {} != {}; {} += {})'.format(var, rnge[0], var, rnge[1], var, rnge[2])
+                elif lstrip.startswith('for'):
+                    i = line[c].find(':')
+                    i2 = line[c].rfind(' ', 0)
+                    obj = line[c][i2:i].replace(':', '').strip()
+                    forlp = 'for(auto it = {}.begin(); it != {}.end(); ++it)'.format(obj, obj)
+                    line[c] = line[c][0:line[c].find('f')] + forlp
+                    line[c + 1] = line[c + 1] + line[c + 1].replace('{', 'auto i = *it;')
+                    # st()
 
                 if in_class[0]:
                     if '{' in line[c] and not in_class_done:
@@ -109,7 +117,8 @@ class Transpile:
         indent_stack = []
         line.append('END')
         for c in range(0, len(line)):
-            line[c] = line[c].replace("'", '"').replace('#', '//')
+            line[c] = line[c].replace("'", '"').replace('#', '//').replace('append', 'push_back') \
+                .replace('pass', ';')
             line[c] = line[c].rstrip()
             if line[c].strip() == '':
                 line[c] = ''
@@ -128,7 +137,7 @@ class Transpile:
 
     @staticmethod
     def add_semicolon(line, c):
-        if line[c] and line[c][-1] != ';' and (')' != line[c].strip()[-1] or ('=' in line[c] and ';' not in line[c])):
+        if line[c] and line[c][-1] != ';' and (')' != line[c].strip()[-1] or ('=' in line[c] or '.' in line[c]) and not ';' in line[c]):
             if not ('{' in line[c] or '}' in line[c]
                     or 'def' in line[c] or 'class' in line[c]):
                 line[c] += ';'
