@@ -14,6 +14,7 @@ public:
         this->arr = std::vector<int>();
     }
 
+    int static x;
     float a;
     float b;
     std::vector<int> arr;
@@ -29,18 +30,15 @@ int main()
         std::cout << i << std::endl;
     }
     std::cout << "liftoff!"<< " " <<  "\n" << std::endl;
-    for(auto i = 0; i != 10; i += 2)
+    for(auto i = 0; i != 10000; ++i)
     {
-        ;
+        x1.arr.push_back(i);
     }
     // iterator to loop through container
-    x1.arr.push_back(1);
-    x1.arr.push_back(2);
-    x1.arr.push_back(3);
     for(auto it = x1.arr.begin(); it != x1.arr.end(); ++it)
     {
         auto i = *it;
-        if(i > 1)
+        if(i > 9995)
         {
             std::cout << i << std::endl;
         }

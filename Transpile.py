@@ -12,6 +12,7 @@ class Transpile:
         libs_to_add = set({})
         in_class = [False, -1]
         in_class_done = True
+        entered_constructor = False
         private_members = []
 
         for c in range(0, len(line)):
@@ -27,6 +28,7 @@ class Transpile:
                     class_name.append(cn)
                     line[c] = 'class {}'.format(class_name[-1])
                 elif lstrip.startswith('def__init__'):
+                    entered_constructor = True
                     args = Transpile.get_args(line, c)
                     line[c] = \
                         line[c][0:line[c].find('def')] \
@@ -59,8 +61,6 @@ class Transpile:
                     line[c] = line[c][0:i] + args + line[c][i2::]
                     line[c] = line[c].replace('print(', 'std::cout << ')
                     line[c] = line[c][0:line[c].rfind(')')] + " << std::endl;"
-
-
                 elif line[c].strip().endswith(']'):
                     typ = line[c][line[c].find('[') + 1:line[c].find(']')]
                     line[c] = line[c][0:line[c].find('[') + 1] + line[c][line[c].find(']')::]
@@ -90,6 +90,13 @@ class Transpile:
                     line[c] = line[c][0:i] + '(' + line[c][i + 1:-1] + ')'
 
                 if in_class[0]:
+                    if not entered_constructor:
+                        if line[c] and not 'class' in line[c] and not '{' in line[c] and '=' in line[c]:
+                            var = line[c].strip()
+                            var = var[0:var.find(' ')]
+                            assignment = line[c][line[c].find('=') + 1::].strip()
+                            line[c] = ''
+                            private_members.append(('static ' + var, assignment))
                     if '{' in line[c] and not in_class_done:
                         line[c] += '\npublic:'
                         in_class_done = True

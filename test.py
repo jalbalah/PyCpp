@@ -2,6 +2,8 @@
 # defining a C++ object X
 class X:
 
+    x = 0
+
     def __init__(self, a, b):
         print('Another initializer')
 
@@ -24,13 +26,11 @@ if __name__ == '__main__':
         print(i)
     print('liftoff!', '\n')
 
-    for i in range(0, 10, 2):
-        pass
+    for i in range(0, 10000):
+        x1.arr.append(i)
 
     # iterator to loop through container
-    x1.arr.append(1)
-    x1.arr.append(2)
-    x1.arr.append(3)
+
     for i in x1.arr:
-        if i > 1:
+        if i > 9995:
             print(i)
