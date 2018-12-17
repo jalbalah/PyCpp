@@ -1,5 +1,5 @@
-#include<vector>
 #include<iostream>
+#include<vector>
 // defining a C++ object X
 class X
 {

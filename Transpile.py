@@ -114,6 +114,7 @@ class Transpile:
 
                 line = cls.add_semicolon(line, c)
                 line = cls.instantiation(line, c, class_name)
+                line
 
         for lib in libs_to_add:
             line.insert(0, '#include<{}>'.format(lib))

@@ -9,14 +9,13 @@ if __name__ == '__main__':
     py_files = list(filter(None, ['' if (not x.endswith('.py') or x in source_files)
                                   else x for x in os.listdir(os.getcwd())]))
 
-
+    # convert all non-source .py files to .cpp
     for pyf in py_files:
         with open(pyf) as rf:
             tupl = Transpile(rf.readlines())  # rf.read().split('\n')
-        with open(pyf.replace('.py', '.cpp'), 'w') as wf:
+        with open(pyf.replace('.py', '_out.cpp'), 'w') as wf:
             wf.write(tupl)
 
-    for f in py_files:
-        build_cmd = 'g++ {} -o {} -g -O0'.format(f.replace('.py', '.cpp'), f.replace('.py', ''))
-        print(build_cmd)
-        os.system(build_cmd)
+    build_cmd = 'g++ your_code_out.cpp -o your_code_out -g -O0'
+    print(build_cmd)
+    os.system(build_cmd)
