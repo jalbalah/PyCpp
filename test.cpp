@@ -22,14 +22,14 @@ int main()
 {
     // instantiating C++ objects
     X x1(1, 2.0);
-    std::cout << x1.a << std::endl;
+    std::cout << x1.a<< " " <<  "\n" << std::endl;
     // range loop
     for(auto i = 10; i != 0; --i)
     {
         std::cout << i << std::endl;
     }
-    std::cout << "liftoff!" << std::endl;
-    for(auto it = 0; it != 10; it += 2)
+    std::cout << "liftoff!"<< " " <<  "\n" << std::endl;
+    for(auto i = 0; i != 10; i += 2)
     {
         ;
     }
@@ -38,7 +38,8 @@ int main()
     x1.arr.push_back(2);
     x1.arr.push_back(3);
     for(auto it = x1.arr.begin(); it != x1.arr.end(); ++it)
-    {    auto i = *it;
-        std::cout << i << std::endl;
+    {
+        auto i = *it;
+        std::cout << i + 100 << std::endl;
     }
 }

@@ -17,14 +17,14 @@ if __name__ == '__main__':
 
     # instantiating C++ objects
     x1 = X(1, 2.0)
-    print(x1.a)
+    print(x1.a, "\n")
 
     # range loop
     for i in range(10, 0):
         print(i)
-    print('liftoff!')
+    print('liftoff!', '\n')
 
-    for it in range(0, 10, 2):
+    for i in range(0, 10, 2):
         pass
 
     # iterator to loop through container
@@ -32,4 +32,4 @@ if __name__ == '__main__':
     x1.arr.append(2)
     x1.arr.append(3)
     for i in x1.arr:
-        print(i)
+        print(i + 100)

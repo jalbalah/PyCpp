@@ -83,7 +83,7 @@ class Transpile:
                     obj = line[c][i2:i].replace(':', '').strip()
                     forlp = 'for(auto it = {}.begin(); it != {}.end(); ++it)'.format(obj, obj)
                     line[c] = line[c][0:line[c].find('f')] + forlp
-                    line[c + 1] = line[c + 1] + line[c + 1].replace('{', 'auto i = *it;')
+                    line[c + 1] = line[c + 1] + '\n    ' + line[c + 1].replace('{', 'auto i = *it;')
                     # st()
 
                 if in_class[0]:
