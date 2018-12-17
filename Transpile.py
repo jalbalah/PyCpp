@@ -52,9 +52,15 @@ class Transpile:
                 elif lstrip.startswith('if__name__=="__main__":'):
                     line[c] = 'int main()'
                 elif lstrip.startswith('print('):
+                    libs_to_add.add('iostream')
+                    i = line[c].find('print(') + 6
+                    i2 = line[c].find(')', i)
+                    args = line[c][i:i2].replace(',', '<< " " << ')
+                    line[c] = line[c][0:i] + args + line[c][i2::]
                     line[c] = line[c].replace('print(', 'std::cout << ')
                     line[c] = line[c][0:line[c].rfind(')')] + " << std::endl;"
-                    libs_to_add.add('iostream')
+
+
                 elif line[c].strip().endswith(']'):
                     typ = line[c][line[c].find('[') + 1:line[c].find(']')]
                     line[c] = line[c][0:line[c].find('[') + 1] + line[c][line[c].find(']')::]

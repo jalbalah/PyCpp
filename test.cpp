@@ -1,5 +1,5 @@
-#include<iostream>
 #include<vector>
+#include<iostream>
 // defining a C++ object X
 class X
 {
@@ -23,9 +23,11 @@ int main()
     // instantiating C++ objects
     X x1(1, 2.0);
     std::cout << x1.a << std::endl;
+    // range loop
     for(auto i = 0; i != 10; ++i)
     {
-        std::cout << i << std::endl;
+        std::cout << i<< " " <<  "hi" << std::endl;
     }
     std::cout << "liftoff!" << std::endl;
+    // iterator loop
 }
