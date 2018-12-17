@@ -14,5 +14,6 @@ if __name__ == '__main__':
     # instantiating C++ objects
     x1 = X(1, 2.0)
     print(x1.a)
-    # for x in range(0, 10):
-    #     print(1)
+    for i in range(0, 10):
+        print(i)
+    print('liftoff!')

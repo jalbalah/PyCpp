@@ -7,7 +7,7 @@ public:
     X(auto a, auto b)
     {
         std::cout << "Another initializer" << std::endl;
-        // initialize object member variables;
+        // initialize object member variables
         this->a = a;
         this->b = b + 1;
         // array with type passed (i.e. int, float, string)
@@ -20,9 +20,12 @@ public:
 };
 int main()
 {
-    // instantiating C++ objects;
+    // instantiating C++ objects
     X x1(1, 2.0);
     std::cout << x1.a << std::endl;
-    // for x in range(0, 10):;
-    //     print(1)
+    for(auto i = 0; i != 10; ++i)
+    {
+        std::cout << i << std::endl;
+    }
+    std::cout << "liftoff!" << std::endl;
 }

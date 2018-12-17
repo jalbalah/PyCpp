@@ -17,6 +17,6 @@ if __name__ == '__main__':
             wf.write(tupl)
 
     for f in py_files:
-        build_cmd = 'g++ {} -o {}'.format(f.replace('.py', '.cpp'), f.replace('.py', ''))
+        build_cmd = 'g++ {} -o {} -g -O0'.format(f.replace('.py', '.cpp'), f.replace('.py', ''))
         print(build_cmd)
-        # os.system(build_cmd)
+        os.system(build_cmd)

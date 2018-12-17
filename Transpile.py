@@ -16,69 +16,80 @@ class Transpile:
 
         for c in range(0, len(line)):
             lstrip = line[c].strip().replace(' ', '')
-            if lstrip.startswith('class'):
-                in_class[0] = True
-                in_class_done = False
-                in_class[1] = Transpile.get_num_indent(line[c])
-                cn = line[c][line[c].find('class ') + 6::].replace(":", "")
-                class_name.append(cn)
-                line[c] = 'class {}'.format(class_name[-1])
-            elif lstrip.startswith('def__init__'):
-                args = Transpile.get_args(line, c)
-                line[c] = \
-                    line[c][0:line[c].find('def')] \
-                    + class_name[-1] \
-                    + '(' + ', '.join(['auto ' + str(x) for x in args]) + ')'
-                c += 2
-                c2 = c
-                while '}' not in line[c2] and c2 < len(line):
-                    if 'self.' in line[c2]:
-                        line[c2] = line[c2].replace('self.', 'this->')
-                        i = line[c2].find('->') + 2
-                        i2 = line[c2].find('=') + 1
-                        private_members.append((line[c2][i:line[c2].find(' ', i)],
-                                                line[c2][i2::]))
-                    c2 += 1
-            elif lstrip.startswith('def'):
-                args = Transpile.get_args(line, c)
-                func_name = line[c][line[c].find('def ') + 4:line[c].find('(')]
-                line[c] = \
-                    line[c][0:line[c].find('def')] \
-                    + func_name \
-                    + '(' + ','.join([str(x) for x in args]) + ')'
-            elif lstrip.startswith('if__name__=="__main__":'):
-                line[c] = 'int main()'
-            elif lstrip.startswith('print('):
-                line[c] = line[c].replace('print(', 'std::cout << ')
-                line[c] = line[c][0:line[c].rfind(')')] + " << std::endl;"
-                libs_to_add.add('iostream')
-            elif lstrip.startswith('for ') or lstrip.startswith('for('):
-                i = line[c].find(' in ') + 4
-                var = line[c][line[c].find('for') + 3:i - 4].replace('(', '')
-                rnge = line[c][i:line[c].find(':')]
-            elif line[c].strip().endswith(']'):
-                typ = line[c][line[c].find('[') + 1:line[c].find(']')]
-                line[c] = line[c][0:line[c].find('[') + 1] + line[c][line[c].find(']')::]
-                line[c] = line[c].replace('[]', 'std::vector<{}>()'.format(typ))
+            if lstrip.startswith('//'):
+                pass
+            else:
+                if lstrip.startswith('class'):
+                    in_class[0] = True
+                    in_class_done = False
+                    in_class[1] = Transpile.get_num_indent(line[c])
+                    cn = line[c][line[c].find('class ') + 6::].replace(":", "")
+                    class_name.append(cn)
+                    line[c] = 'class {}'.format(class_name[-1])
+                elif lstrip.startswith('def__init__'):
+                    args = Transpile.get_args(line, c)
+                    line[c] = \
+                        line[c][0:line[c].find('def')] \
+                        + class_name[-1] \
+                        + '(' + ', '.join(['auto ' + str(x) for x in args]) + ')'
+                    c += 2
+                    c2 = c
+                    while '}' not in line[c2] and c2 < len(line):
+                        if 'self.' in line[c2]:
+                            line[c2] = line[c2].replace('self.', 'this->')
+                            i = line[c2].find('->') + 2
+                            i2 = line[c2].find('=') + 1
+                            private_members.append((line[c2][i:line[c2].find(' ', i)],
+                                                    line[c2][i2::]))
+                        c2 += 1
+                elif lstrip.startswith('def'):
+                    args = Transpile.get_args(line, c)
+                    func_name = line[c][line[c].find('def ') + 4:line[c].find('(')]
+                    line[c] = \
+                        line[c][0:line[c].find('def')] \
+                        + func_name \
+                        + '(' + ','.join([str(x) for x in args]) + ')'
+                elif lstrip.startswith('if__name__=="__main__":'):
+                    line[c] = 'int main()'
+                elif lstrip.startswith('print('):
+                    line[c] = line[c].replace('print(', 'std::cout << ')
+                    line[c] = line[c][0:line[c].rfind(')')] + " << std::endl;"
+                    libs_to_add.add('iostream')
+                elif line[c].strip().endswith(']'):
+                    typ = line[c][line[c].find('[') + 1:line[c].find(']')]
+                    line[c] = line[c][0:line[c].find('[') + 1] + line[c][line[c].find(']')::]
+                    line[c] = line[c].replace('[]', 'std::vector<{}>()'.format(typ))
+                elif lstrip.startswith('for'):
+                    i = line[c].find(' in ') + 4
+                    var = line[c][line[c].find('for') + 3:i - 4].replace('(', '').strip()
+                    rnge = line[c][i:line[c].find(':')]
+                    rnge = [x.strip() for x in rnge[rnge.find('(') + 1:rnge.find(')')].split(',')]
+                    if len(rnge) == 2:
+                        op = '++' if rnge[0] < rnge[1] else '--'
+                        line[c] = line[c][0:line[c].find('f')] + \
+                            'for(auto {} = {}; {} != {}; {}{})'.format(var, rnge[0], var, rnge[1], op, var)
+                    elif len(rnge) == 3:
+                        line[c] = line[c][0:line[c].find('f')] + \
+                                  'for(auto {} = {}; {} != {}; {} += {})'.format(var, rnge[0], var, rnge[1], var, rnge[2])
 
-            if in_class[0]:
-                if '{' in line[c] and not in_class_done:
-                    line[c] += '\npublic:'
-                    in_class_done = True
-                elif '}' in line[c]:
-                    if Transpile.get_num_indent(line[c]) == in_class[1]:
-                        in_class[0] = False
-                        line[c] += ';'
-                        if private_members:
-                            pvt = '\n'
-                        for mbr in private_members:
-                            typ, libs_to_add = Transpile.get_type(mbr[1], libs_to_add)
-                            pvt += '    {} {};\n'.format(typ,  mbr[0]);
-                        if private_members:
-                            line[c] = pvt + line[c]
+                if in_class[0]:
+                    if '{' in line[c] and not in_class_done:
+                        line[c] += '\npublic:'
+                        in_class_done = True
+                    elif '}' in line[c]:
+                        if Transpile.get_num_indent(line[c]) == in_class[1]:
+                            in_class[0] = False
+                            line[c] += ';'
+                            if private_members:
+                                pvt = '\n'
+                            for mbr in private_members:
+                                typ, libs_to_add = Transpile.get_type(mbr[1], libs_to_add)
+                                pvt += '    {} {};\n'.format(typ,  mbr[0]);
+                            if private_members:
+                                line[c] = pvt + line[c]
 
-            line = cls.add_semicolon(line, c)
-            line = cls.instantiation(line, c, class_name)
+                line = cls.add_semicolon(line, c)
+                line = cls.instantiation(line, c, class_name)
 
         for lib in libs_to_add:
             line.insert(0, '#include<{}>'.format(lib))
@@ -111,7 +122,7 @@ class Transpile:
 
     @staticmethod
     def add_semicolon(line, c):
-        if line[c] and line[c][-1] != ';' and (')' != line[c].strip()[-1] or '=' in line[c]):
+        if line[c] and line[c][-1] != ';' and (')' != line[c].strip()[-1] or ('=' in line[c] and ';' not in line[c])):
             if not ('{' in line[c] or '}' in line[c]
                     or 'def' in line[c] or 'class' in line[c]):
                 line[c] += ';'
