@@ -1,5 +1,5 @@
-#include<iostream>
 #include<vector>
+#include<iostream>
 // defining a C++ object X
 class X
 {
@@ -24,7 +24,7 @@ int main()
     X x1(1, 2.0);
     std::cout << x1.a<< " " <<  "\n" << std::endl;
     // range loop
-    for(auto i = 10; i != 0; --i)
+    for(auto i = 10; i != 0; i += -1)
     {
         std::cout << i << std::endl;
     }
@@ -40,6 +40,9 @@ int main()
     for(auto it = x1.arr.begin(); it != x1.arr.end(); ++it)
     {
         auto i = *it;
-        std::cout << i + 100 << std::endl;
+        if(i > 1)
+        {
+            std::cout << i << std::endl;
+        }
     }
 }

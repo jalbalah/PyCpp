@@ -20,7 +20,7 @@ if __name__ == '__main__':
     print(x1.a, "\n")
 
     # range loop
-    for i in range(10, 0):
+    for i in range(10, 0, -1):
         print(i)
     print('liftoff!', '\n')
 
@@ -32,4 +32,5 @@ if __name__ == '__main__':
     x1.arr.append(2)
     x1.arr.append(3)
     for i in x1.arr:
-        print(i + 100)
+        if i > 1:
+            print(i)

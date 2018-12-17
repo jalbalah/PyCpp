@@ -85,6 +85,9 @@ class Transpile:
                     line[c] = line[c][0:line[c].find('f')] + forlp
                     line[c + 1] = line[c + 1] + '\n    ' + line[c + 1].replace('{', 'auto i = *it;')
                     # st()
+                elif lstrip.startswith('if') and line[c].strip().endswith(':'):
+                    i = line[c].find('if') + 2
+                    line[c] = line[c][0:i] + '(' + line[c][i + 1:-1] + ')'
 
                 if in_class[0]:
                     if '{' in line[c] and not in_class_done:
