@@ -1,17 +1,24 @@
-#include<iostream>
 #include<vector>
+#include<iostream>
+;
 // defining a C++ object X
 class X
+;
 {
 public:
+;
+;
     X(auto a, auto b)
     {
         std::cout << "Another initializer" << std::endl;
+;
         // initialize object member variables
         this->a = a;
         this->b = b + 1;
+;
         // array with type ;ed (i.e. int, float, string)
-        this->arr = std::vector<int>()
+        this->arr = std::vector<int>();
+;
     }
 
     int static x;
@@ -60,6 +67,7 @@ public:
             if(i > 9995);
             {
                 std::cout << i << std::endl;
+;
             }
         }
     }
@@ -69,3 +77,4 @@ int main()
     Test t();
     t.run_all_tests();
 }
+;

@@ -160,7 +160,8 @@ class Transpile:
     @staticmethod
     def add_semicolon(line, c):
         not_in = lambda x: x not in line[c]
-        if line[c] and not_in(';') and not_in('void') and not_in('int'):
+        yes_in = lambda x: not not_in(x)
+        if line[c].strip() and not_in('for') and not_in('if') and yes_in('=') or (not_in(';') and not_in('void') and not_in('int')):
             if not ('{' in line[c] or '}' in line[c]
                     or 'def' in line[c] or 'class' in line[c]):
                 line[c] += ';'
