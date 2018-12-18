@@ -161,10 +161,10 @@ class Transpile:
     def add_semicolon(line, c):
         not_in = lambda x: x not in line[c]
         yes_in = lambda x: not not_in(x)
-        if line[c].strip() and not_in('for') and not_in('if') and yes_in('=') or (not_in(';') and not_in('void') and not_in('int')):
-            if not ('{' in line[c] or '}' in line[c]
-                    or 'def' in line[c] or 'class' in line[c]):
-                line[c] += ';'
+        if line[c] and not_in('//') and not_in('if') and not_in('for') and not_in('class') and not_in('main'):
+            if yes_in('=') or (not_in(';') and not_in('void')):
+                if not ('{' in line[c] or '}' in line[c] and not_in('def') and not_in('class')):
+                    line[c] += ';'
         return line
 
     @staticmethod
@@ -175,6 +175,7 @@ class Transpile:
                 stack_init = line[c].lstrip()
                 var_name = stack_init[0:stack_init.find(' ')]
                 args = stack_init[stack_init.find('('):stack_init.find(')') + 1].strip()
+                args = '' if args.strip()[1] == ')' else args
                 line[c] = i * ' ' + clas + ' ' + var_name + args + ';'
         return line
 

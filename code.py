@@ -15,24 +15,21 @@ class X:
         self.arr = [int]
 
 class Test:
+    def __init__(self):
+        pass
     def run_all_tests(self):
-        test_instantiation()
-        test_loop()
-        test_arraylist()
-        test_iterator()
-    def test_instantiation(self):
         # instantiating C++ objects
         x1 = X(1, 2.0)
         print(x1.a, "\n")
-    def test_loop(self):
+
         # range loop
         for i in range(10, 0, -1):
             print(i)
         print('liftoff!', '\n')
-    def test_arraylist(self):
+
         for i in range(0, 10000):
             x1.arr.append(i)
-    def test_iterator(self):
+
         # iterator to loop through container
         for i in x1.arr:
             if i > 9995:
