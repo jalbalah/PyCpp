@@ -1,0 +1,8 @@
+
+
+- all arrays must have a type passed
+- all classes should have a(n at least empty) default constructor, but must if they have static members
+- no static classes are allowed
+
+C++ details
+- all class members are public
