@@ -1,7 +1,7 @@
 #include<iostream>
+#include<fstream>
 #include<string>
 #include<vector>
-#include<fstream>
 
 
 // defining a C++ object X
@@ -63,8 +63,10 @@ public:
                 std::cout << i << std::endl;
             }
         }
-        // f = open('tests/test.txt', 'w')
-        // f.write('hello\nworld')
+        std::ofstream f("tests/test.txt");
+
+        f << "hello\nworld";
+        f.close();
         std::ifstream file("tests/test.txt");
         std::vector<std::string> f2;
         if(file.is_open()){

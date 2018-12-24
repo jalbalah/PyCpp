@@ -48,8 +48,8 @@ class Test:
                 print(i)
 
 
-        # f = open('tests/test.txt', 'w')
-        # f.write('hello\nworld')
+        f = open('tests/test.txt', 'w')
+        f.write('hello\nworld')
         
         f2 = open('tests/test.txt', 'r').readlines()
         print("\n", f2[0])
