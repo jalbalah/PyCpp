@@ -126,7 +126,7 @@ class Transpile:
                     elif ftype == 'w':
                         libs_to_add.add('fstream')
                         indent = ' ' * cls.get_num_indent(line[c])
-                        line[c] = indent + 'std::ofstream {}({});\n'.format(var_name, fn)
+                        line[c] = indent + 'std::ofstream {}({});'.format(var_name, fn)
                         write_files.append(var_name)
                 elif '.write(' in line[c]:
                     string_to_write = line[c][line[c].find('.write(') + 7:-1]
@@ -134,7 +134,7 @@ class Transpile:
                         if var_wf + '.write(' in line[c]:
                             indent = ' ' * cls.get_num_indent(line[c])
                             line[c] = indent + '{} << {};\n'.format(var_wf, string_to_write)
-                            line[c] += indent + '{}.close();'.format(var_wf)
+                            line[c] += indent + '{}.close();\n'.format(var_wf)
                 # bottom of elif
                 elif '=' in line[c] and not 'this->' in line[c] and not 'self.' in line[c] \
                         and not 'auto' in line[c]:
