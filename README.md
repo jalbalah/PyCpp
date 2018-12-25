@@ -21,7 +21,11 @@ shared (static) class variables:
 lists and loops:  
 `./lessons/lesson5`
 
+?  
+`./lessons/lesson6`
 
+reading and writing files:  
+`./lessons/lesson7`
 
 TO DO
 
