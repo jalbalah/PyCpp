@@ -70,6 +70,7 @@ class Transpile:
                     line[c] = line[c][0:i] + args + line[c][i2::]
                     line[c] = line[c].replace('print(', 'std::cout << ')
                     line[c] = line[c][0:line[c].rfind(')')] + " << std::endl;"
+                    # line[c] = line[c].replace('+', ' << ')
                 elif line[c].strip().endswith(']'):
                     typ = line[c][line[c].find('[') + 1:line[c].find(']')]
                     line[c] = line[c][0:line[c].find('[') + 1] + line[c][line[c].find(']')::]
@@ -95,8 +96,12 @@ class Transpile:
                     i2 = line[c].rfind(' ', 0)
                     obj = line[c][i2:i].replace(':', '').strip()
                     forlp = 'for(auto it = {}.begin(); it != {}.end(); ++it)'.format(obj, obj)
+                    var_name = line[c].strip()
+                    var_name = var_name[var_name.find(' ') + 1::]
+                    var_name = var_name[0:var_name.find(' ')]
+                    auto_line = 'auto {} = *it;'.format(var_name)
                     line[c] = line[c][0:line[c].find('f')] + forlp
-                    line[c + 1] = line[c + 1] + '\n    ' + line[c + 1].replace('{', 'auto i = *it;')
+                    line[c + 1] = line[c + 1] + '\n    ' + line[c + 1].replace('{', auto_line)
                 elif lstrip.startswith('if') and line[c].strip().endswith(':'):
                     i = line[c].find('if') + 2
                     line[c] = line[c][0:i] + '(' + line[c][i + 1:-1] + ')'

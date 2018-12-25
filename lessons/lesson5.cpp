@@ -1,6 +1,8 @@
-#include<vector>
 #include<string>
 #include<iostream>
+#include<vector>
+
+
 class Student
 {
 public:

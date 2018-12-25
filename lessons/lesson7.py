@@ -1,7 +1,13 @@
 
 
 if __name__ == '__main__':
-    fr = open('tests/test.txt', 'r')
-    s = 'xoxoxo'
+    s = 'xoxoxo\nhello world'
+
     fw = open('tests/test.txt', 'w')
     fw.write(s)
+
+    fr = open('tests/test.txt', 'r')
+    print(fr[0] + " " + fr[1])
+
+    for line in fr:
+        print(line)

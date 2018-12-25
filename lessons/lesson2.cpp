@@ -1,4 +1,6 @@
 #include<iostream>
+
+
 // this is called a class
 class Square
 {
