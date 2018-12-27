@@ -1,7 +1,7 @@
+#include<iostream>
+#include<string>
 #include<fstream>
 #include<vector>
-#include<string>
-#include<iostream>
 
 
 // defining a C++ object X
@@ -10,7 +10,7 @@ class X
 public:
     X()
     {
-        ;;
+        ;
     }
     X(auto a, auto b)
     {
@@ -49,7 +49,7 @@ public:
         {
             std::cout << i << std::endl;
         }
-        std::cout << "liftoff!"<< " " <<  "\n" << std::endl;
+        std::cout << "liftoff!" << " " <<  "\n" << std::endl;
         for(auto i = 0; i != 10000; ++i)
         {
             x1.arr.push_back(i);
@@ -75,7 +75,7 @@ public:
                 f2.push_back(line);
             }; file.close();
         }
-        std::cout << "\n"<< " " <<  f2[0] << std::endl;
+        std::cout << "\n" << " " <<  f2[0] << std::endl;
         std::string s("01234");
         std::vector<char> s2(s.begin() + 0, s.begin() + 3);
         std::cout << s2[0] << std::endl;

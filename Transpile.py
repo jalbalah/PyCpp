@@ -69,7 +69,6 @@ class Transpile:
                     line[c] = line[c][0:i] + args + line[c][i2::]
                     line[c] = line[c].replace('print(', 'std::cout << ')
                     line[c] = line[c][0:line[c].rfind(')')] + " << std::endl;"
-                    # line[c] = line[c].replace('+', ' << ')
                 elif line[c].strip().endswith(']') and not cls.between(line[c], ':', '[', ']'):
                     typ = line[c][line[c].find('[') + 1:line[c].find(']')]
                     line[c] = line[c][0:line[c].find('[') + 1] + line[c][line[c].find(']')::]
@@ -302,9 +301,10 @@ class Transpile:
         for c in range(0, len(line)):
             if '#' not in line[c] and '#' not in line[c]:
                 line[c] = line[c] \
-                    .replace('self.', 'this->').replace('>()];', '>();').replace(';;;', ';').replace(';;', ';') \
+                    .replace('self.', 'this->').replace('>()];', '>();') \
                     .replace("'", '"').replace('append', 'push_back').replace('pass', ';') \
-                    .replace('" +', '" <<').replace('"+', ' << ').replace('+"', ' << "').replace('+ "', '<< "')
+                    .replace('" +', '" <<').replace('"+', ' << ').replace('+"', ' << "').replace('+ "', '<< "') \
+                    .replace(';;;', ';').replace(';;', ';').replace('"<<', '" <<').replace('<<"', '<< "')
             else:
                 if '#include' not in line[c]:
                     line[c] = line[c].replace('#', '//')
