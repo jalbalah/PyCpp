@@ -54,6 +54,18 @@ class Test:
         f2 = open('tests/test.txt', 'r').readlines()
         print("\n", f2[0])
 
+        s = "01234"
+        s2 = s[0:3]
+        print(s2[0])
+
+        a = [int]
+        a.append(1)
+        a.append(2)
+        a.append(3)
+        a.append(4)
+        a2 = a[0:3]
+        print(a2[0])
+
 
 if __name__ == '__main__':
     t = Test()

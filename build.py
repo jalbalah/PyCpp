@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     def compile(python_file):
         name = python_file.replace('.py', '')
-        build_cmd = 'g++ {}.cpp -o {} -g -O0'.format(name, name)
+        build_cmd = 'g++ {}.cpp -o {} -g -O0 -std=c++14'.format(name, name)
         print(build_cmd)
         os.system(build_cmd)
 
@@ -53,7 +53,7 @@ if __name__ == '__main__':
                 for i in range(0, 10000):
                     wf.write(code.replace('X', 'X{}'.format(i)))
 
-    transpile_and_compile('lessons')
+    # transpile_and_compile('lessons')
 
     # test_generate_large_codebase()
     # transpile_and_compile('tests', do_compile=False)

@@ -1,6 +1,6 @@
 
 from pdb import set_trace as st
-from time import time
+from datetime import datetime
 
 
 class Transpile:
@@ -58,7 +58,6 @@ class Transpile:
                         '(' + ','.join(['auto ' + str(x) for x in args]) + ')'
                     return_type = 'void ' if '{' in line[c + 1] else ''
                     i = line[c].find(line[c].strip()[0])
-                    # st()
                     line[c] = line[c][0:i] + return_type + line[c][i::]
                 elif lstrip.startswith('if__name__=='):
                     line[c] = 'int main()'
@@ -71,11 +70,10 @@ class Transpile:
                     line[c] = line[c].replace('print(', 'std::cout << ')
                     line[c] = line[c][0:line[c].rfind(')')] + " << std::endl;"
                     # line[c] = line[c].replace('+', ' << ')
-                elif line[c].strip().endswith(']'):
+                elif line[c].strip().endswith(']') and not cls.between(line[c], ':', '[', ']'):
                     typ = line[c][line[c].find('[') + 1:line[c].find(']')]
                     line[c] = line[c][0:line[c].find('[') + 1] + line[c][line[c].find(']')::]
                     line[c] = line[c].replace('[]', 'std::vector<{}>()'.format(typ))
-                    # st()
                     if '=' in line[c] and not 'this->' in line[c] and ')' in line[c]:
                         if entered_constructor:
                             line[c] = ' ' * cls.get_num_indent(line[c]) + 'auto ' + line[c].lstrip()
@@ -107,7 +105,7 @@ class Transpile:
                     line[c] = line[c][0:i] + '(' + line[c][i + 1:-1] + ')'
                 elif 'open(' in line[c]:
                     indent = ' ' * cls.get_num_indent(line[c])
-                    ifstream = 'f{}'.format(str(int(time())))
+                    ifstream = 'f{}'.format(cls.get_time())
                     i = line[c].find('open(') + 5
                     i2 = line[c].find(',', i)
                     fn = line[c][i:i2]
@@ -200,9 +198,23 @@ class Transpile:
         line = cls.get_replacements(line)
         line = cls.add_static_member_initializers(line, static_members)
         line = cls.add_auto_for_local_vars(line, class_name, private_members, static_members)
+        line = cls.index_str_or_vector(line)
+        line = cls.convert_char_to_string(line)
 
         cpp = '\n'.join(filter(None, line))
         return cpp
+
+    @staticmethod
+    def convert_char_to_string(line):
+        for c in range(0, len(line)):
+            if Transpile.get_assign_type(line[c]) == 'std::string' \
+                    and 'vector' not in line[c]:
+                i = line[c].find('"')
+                i2 = line[c].find('"', i + 1)
+                line[c] = line[c][0:i] + '("' + line[c][i + 1:i2] + '");'
+                line[c] = line[c].replace(' = ', '').replace('=', '').replace(' =', '').replace('= ', '')
+                line[c] = line[c].replace('auto ', 'std::string ')
+        return line
 
     @staticmethod
     def add_auto_for_local_vars(line, class_name, private_members, static_members):
@@ -227,6 +239,39 @@ class Transpile:
                         local_vars.append(line[c][0:line[c].find('=')].strip().replace('auto ', ''))
                 line[c] = line[c].replace(flag, '')
 
+        return line
+
+    @staticmethod
+    def index_str_or_vector(line):
+        for c in range(0, len(line)):
+            if Transpile.between(line[c], ':', '[', ']'):
+                var_name = line[c].strip().replace('auto ', '')
+                var_name = var_name[0:var_name.find(' ')]  # .replace('X', 'auto ')
+                a = line[c][line[c].find('[') + 1:line[c].find(':')]
+                b = line[c][line[c].find(':') + 1:line[c].find(']')]
+                vector_or_string = line[c][line[c].find('=') + 1:line[c].find('[')].strip()
+                indent = ' ' * Transpile.get_num_indent(line[c])
+                type_x = 'type{}'.format(Transpile.get_time())
+
+                c2 = c - 1
+                while c2 >= 0 and (vector_or_string + ' =' not in line[c2]) and (vector_or_string + '=' not in line[c2]):
+                    c2 -= 1
+
+                line_type = Transpile.get_assign_type(line[c2])
+                if line_type == 'string':
+                    substring = 'auto {} = std::string({}).substr({}, {});\n'
+                    line2 = indent + substring.format(var_name, vector_or_string, a, b)
+                else:
+                    line_type = 'char'
+                    vector = 'std::vector<{}> {}({}.begin() + {}, {}.begin() + {});'
+                    line2 = indent + vector.format(
+                        line_type, var_name, vector_or_string, a, vector_or_string, b)
+                    # st()
+                # elif line_type == 'int':
+                # elif line_type == 'float':
+                line[c] = line2
+            elif 's[0:3]' in line[c]:
+                st()
         return line
 
     @staticmethod
@@ -339,7 +384,7 @@ class Transpile:
                 line[c].strip()[line[c].strip().find(','):-1][0:-1].split(',')[1::]]
 
     @staticmethod
-    def get_type(x, libs_to_add, class_name):
+    def get_type(x, libs_to_add=set(), class_name=['']):
         if x.strip()[0] == '[' and x.strip()[-1] == ']':
             libs_to_add.add('vector')
             typ = x[x.find('[') + 1:x.find(']')].strip()
@@ -364,3 +409,32 @@ class Transpile:
         except Exception:
             libs_to_add.add('string')
             return ['std::string', libs_to_add]
+
+    @staticmethod
+    def between(s, btw, a, b):
+        """ return True if btw between a and b """
+        s = s.replace('::', '')  # ignore std::, etc.
+        ai = s.rfind(a)
+        bi = s.rfind(b)
+        btwi = s.rfind(btw)
+        return True if btwi < bi and btwi > ai else False
+
+    @staticmethod
+    def get_assign_type(line_c):
+        line_c = line_c[line_c.find('=') + 1:line_c.find(';')].strip()
+        if not len(line_c.strip()):
+            return
+        if 'vector<' in line_c:
+            i = line_c.find('vector<') + 7
+            return line_c[i:line_c.find('>')]
+        if '"' == line_c.strip()[0] or "'" == line_c.strip()[0]:
+            return 'std::string'
+        elif '.' in line_c:
+            return 'float'
+        else:
+            return 'int'
+
+
+    @staticmethod
+    def get_time():
+        return str(int(datetime.now().microsecond))

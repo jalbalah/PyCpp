@@ -1,7 +1,7 @@
 #include<string>
-#include<fstream>
 #include<iostream>
 #include<vector>
+#include<fstream>
 
 
 // defining a C++ object X
@@ -76,6 +76,16 @@ public:
             }; file.close();
         }
         std::cout << "\n"<< " " <<  f2[0] << std::endl;
+        std::string s("01234");
+        std::vector<char> s2(s.begin() + 0, s.begin() + 3);
+        std::cout << s2[0] << std::endl;
+        auto a = std::vector<int>();
+        a.push_back(1);
+        a.push_back(2);
+        a.push_back(3);
+        a.push_back(4);
+        std::vector<char> a2(a.begin() + 0, a.begin() + 3);
+        std::cout << a2[0] << std::endl;
     }
 
     static X x2;
