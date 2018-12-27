@@ -66,6 +66,14 @@ class Test:
         a2 = a[0:3]
         print(a2[0])
 
+        b = [float]
+        b.append(1)
+        b.append(2)
+        b.append(3)
+        b.append(4)
+        b2 = b[0:3]
+        print(b2[0])
+
 
 if __name__ == '__main__':
     t = Test()

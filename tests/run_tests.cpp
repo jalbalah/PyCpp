@@ -1,7 +1,7 @@
+#include<fstream>
+#include<vector>
 #include<string>
 #include<iostream>
-#include<vector>
-#include<fstream>
 
 
 // defining a C++ object X
@@ -84,8 +84,15 @@ public:
         a.push_back(2);
         a.push_back(3);
         a.push_back(4);
-        std::vector<char> a2(a.begin() + 0, a.begin() + 3);
+        std::vector<int> a2(a.begin() + 0, a.begin() + 3);
         std::cout << a2[0] << std::endl;
+        auto b = std::vector<float>();
+        b.push_back(1);
+        b.push_back(2);
+        b.push_back(3);
+        b.push_back(4);
+        std::vector<float> b2(b.begin() + 0, b.begin() + 3);
+        std::cout << b2[0] << std::endl;
     }
 
     static X x2;

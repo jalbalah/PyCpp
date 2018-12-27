@@ -258,11 +258,14 @@ class Transpile:
                     c2 -= 1
 
                 line_type = Transpile.get_assign_type(line[c2])
-                if line_type == 'string':
-                    substring = 'auto {} = std::string({}).substr({}, {});\n'
-                    line2 = indent + substring.format(var_name, vector_or_string, a, b)
-                else:
+                if line_type == 'std::string':
+                    # substring = 'auto {} = std::string({}).substr({}, {});\n'
+                    # line2 = indent + substring.format(var_name, vector_or_string, a, b)
                     line_type = 'char'
+                    vector = 'std::vector<{}> {}({}.begin() + {}, {}.begin() + {});'
+                    line2 = indent + vector.format(
+                        line_type, var_name, vector_or_string, a, vector_or_string, b)
+                else:
                     vector = 'std::vector<{}> {}({}.begin() + {}, {}.begin() + {});'
                     line2 = indent + vector.format(
                         line_type, var_name, vector_or_string, a, vector_or_string, b)
