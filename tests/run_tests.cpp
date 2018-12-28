@@ -80,11 +80,12 @@ public:
         std::vector<char> s2(s.begin() + 0, s.begin() + 3);
         std::cout << s2[0] << std::endl;
         auto a = std::vector<int>();
+        a.push_back(0);
         a.push_back(1);
         a.push_back(2);
         a.push_back(3);
         a.push_back(4);
-        std::vector<int> a2(a.begin() + 0, a.begin() + 3);
+        std::vector<float> a2(a.begin() + 0, a.begin() + 3);
         std::cout << a2[0] << std::endl;
         auto b = std::vector<float>();
         b.push_back(1);
@@ -92,7 +93,9 @@ public:
         b.push_back(3);
         b.push_back(4);
         std::vector<float> b2(b.begin() + 0, b.begin() + 3);
+        std::vector<float> b3(b2.begin() + 1, b2.begin() + (b2).size());
         std::cout << b2[0] << std::endl;
+        std::cout << b3[0] << std::endl;
         std::cout << (b2).size() << std::endl;
         std::string s3("0123456");
         int i1 = s3.find("34");

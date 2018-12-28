@@ -59,6 +59,7 @@ class Test:
         print(s2[0])
 
         a = [int]
+        a.append(0)
         a.append(1)
         a.append(2)
         a.append(3)
@@ -72,7 +73,9 @@ class Test:
         b.append(3)
         b.append(4)
         b2 = b[0:3]
+        b3 = b2[1:len(b2)]
         print(b2[0])
+        print(b3[0])
         print(len(b2))
 
         s3 = '0123456'
