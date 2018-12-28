@@ -76,7 +76,7 @@ public:
             }; file.close();
         }
         std::cout << "\n" << " " <<  f2[0] << std::endl;
-        auto s = "01234";
+        std::string s("01234");
         std::vector<char> s2(s.begin() + 0, s.begin() + 3);
         std::cout << s2[0] << std::endl;
         auto a = std::vector<int>();
@@ -94,7 +94,7 @@ public:
         std::vector<float> b2(b.begin() + 0, b.begin() + 3);
         std::cout << b2[0] << std::endl;
         std::cout << (b2).size() << std::endl;
-        auto s3 = "0123456";
+        std::string s3("0123456");
         int i1 = s3.find("34");
         auto i2 = i1 + 1;
         std::cout << i2 << std::endl;

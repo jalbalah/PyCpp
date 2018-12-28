@@ -265,7 +265,7 @@ class Transpile:
         for c in range(0, len(line)):
             if Transpile.get_assign_type(line[c]) == 'std::string' \
                     and 'vector' not in line[c] and 'this->' not in line[c] \
-                    and not line[c].find('.') < line[c].find('='):
+                    and (line[c].find('.') == -1 or not line[c].find('.') < line[c].find('=')):
                 i = line[c].find('"')
                 i2 = line[c].find('"', i + 1)
                 line[c] = line[c][0:i] + '("' + line[c][i + 1:i2] + '");'

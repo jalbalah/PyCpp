@@ -1,13 +1,13 @@
 #include<iostream>
-#include<fstream>
-#include<string>
 #include<vector>
+#include<string>
+#include<fstream>
 
 
 ;
 int main()
 {
-    auto s = "xoxoxo\nhello world";
+    std::string s("xoxoxo\nhello world");
     std::ofstream fw("tests/test.txt");
     fw << s;
     fw.close();
