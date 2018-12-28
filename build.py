@@ -53,7 +53,8 @@ if __name__ == '__main__':
                 for i in range(0, 10000):
                     wf.write(code.replace('X', 'X{}'.format(i)))
 
-    # transpile_and_compile('lessons')
+    # comment out to skip compiling lessons
+    transpile_and_compile('lessons')
 
     # test_generate_large_codebase()
     # transpile_and_compile('tests', do_compile=False)

@@ -21,14 +21,14 @@ static class members:
 lists and loops:  
 `./lessons/lesson5`
 
-
+TO DO  
 `./lessons/lesson6`
 
 reading and writing files:  
 `./lessons/lesson7`
 
-TO DO
-
-class lists:
-
-shared (static) class lists:
+To speed up developement, see in `build.py`:
+```bash
+# comment out to skip compiling lessons
+transpile_and_compile('lessons')
+```

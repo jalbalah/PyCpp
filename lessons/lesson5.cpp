@@ -1,6 +1,6 @@
-#include<vector>
-#include<iostream>
 #include<string>
+#include<iostream>
+#include<vector>
 
 
 class Student
@@ -9,10 +9,6 @@ public:
     Student()
     {
         this->name = "";
-    }
-    void set_name(auto name)
-    {
-        this->name = name;
     }
     void get_name(auto student_num)
     {
@@ -31,7 +27,7 @@ public:
     void add_student(auto name)
     {
         Student s;
-        s.set_name(name);
+        s.name = name;
         this->students.push_back(s);
     }
     void get_students()
