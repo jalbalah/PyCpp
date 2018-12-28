@@ -137,6 +137,52 @@ class Transpile:
                             indent = ' ' * cls.get_num_indent(line[c])
                             line[c] = indent + '{} << {};\n'.format(var_wf, string_to_write)
                             line[c] += indent + '{}.close();\n'.format(var_wf)
+                elif Transpile.between(line[c], ':', '[', ']'):
+                    var_name = line[c].strip().replace('auto ', '')
+                    var_name = var_name[0:var_name.find(' ')]  # .replace('X', 'auto ')
+                    a = line[c][line[c].find('[') + 1:line[c].find(':')]
+                    b = line[c][line[c].find(':') + 1:line[c].find(']')]
+                    vector_or_string = line[c][line[c].find('=') + 1:line[c].find('[')].strip()
+                    indent = ' ' * Transpile.get_num_indent(line[c])
+
+                    c2 = c - 1
+                    while c2 >= 0 and (vector_or_string + ' =' not in line[c2]) and (vector_or_string + '=' not in line[c2]):
+                        c2 -= 1
+
+                    line_type = Transpile.get_assign_type(line[c2])
+                    if line_type == 'std::string':
+                        line_type = 'char'
+                        vector = 'std::vector<{}> {}({}.begin() + {}, {}.begin() + {});'
+                        line2 = indent + vector.format(
+                            line_type, var_name, vector_or_string, a, vector_or_string, b)
+                    else:
+                        vector = 'std::vector<{}> {}({}.begin() + {}, {}.begin() + {});'
+                        line2 = indent + vector.format(
+                            line_type, var_name, vector_or_string, a, vector_or_string, b)
+                    line[c] = line2
+                elif 'find(' in line[c]:
+                    var_name = line[c].strip().replace('auto ', '')
+                    var_name = var_name[0:var_name.find(' ')]  # .replace('X', 'auto ')
+                    vector_or_string = line[c][line[c].find('=') + 1:line[c].find('.find')].strip()
+                    i = line[c].find('.find(') + 6
+                    string_find = line[c][i:line[c].find(')', i)].replace('"', "'")
+                    indent = ' ' * Transpile.get_num_indent(line[c])
+
+                    c2 = c - 1
+                    while c2 >= 0 and vector_or_string not in line[c2]:
+                        c2 -= 1
+
+                    line_type = Transpile.get_assign_type(line[c2])
+                    if line_type == 'std::string':
+                        find_str = 'int {} = {}.find({});'
+                        line2 = indent + find_str.format(var_name, vector_or_string, string_find)
+                    else:
+                        libs_to_add.add('algorithm')
+                        find_str = 'int {} = std::find({}.begin(), {}.end(), {}) - {}.begin();'
+                        line2 = indent + find_str.format(
+                            var_name, vector_or_string, vector_or_string, string_find, vector_or_string)
+                    st()
+                    line[c] = line2
                 # bottom of elif
                 elif '=' in line[c] and not 'this->' in line[c] and not 'self.' in line[c] \
                         and not 'auto' in line[c]:
@@ -198,7 +244,6 @@ class Transpile:
         line = cls.get_replacements(line)
         line = cls.add_static_member_initializers(line, static_members)
         line = cls.add_auto_for_local_vars(line, class_name, private_members, static_members)
-        line = cls.index_str_or_vector(line)
         line = cls.convert_char_to_string(line)
         line = cls.convert_len_to_size(line)
 
@@ -254,42 +299,6 @@ class Transpile:
         return line
 
     @staticmethod
-    def index_str_or_vector(line):
-        for c in range(0, len(line)):
-            if Transpile.between(line[c], ':', '[', ']'):
-                var_name = line[c].strip().replace('auto ', '')
-                var_name = var_name[0:var_name.find(' ')]  # .replace('X', 'auto ')
-                a = line[c][line[c].find('[') + 1:line[c].find(':')]
-                b = line[c][line[c].find(':') + 1:line[c].find(']')]
-                vector_or_string = line[c][line[c].find('=') + 1:line[c].find('[')].strip()
-                indent = ' ' * Transpile.get_num_indent(line[c])
-                type_x = 'type{}'.format(Transpile.get_time())
-
-                c2 = c - 1
-                while c2 >= 0 and (vector_or_string + ' =' not in line[c2]) and (vector_or_string + '=' not in line[c2]):
-                    c2 -= 1
-
-                line_type = Transpile.get_assign_type(line[c2])
-                if line_type == 'std::string':
-                    # substring = 'auto {} = std::string({}).substr({}, {});\n'
-                    # line2 = indent + substring.format(var_name, vector_or_string, a, b)
-                    line_type = 'char'
-                    vector = 'std::vector<{}> {}({}.begin() + {}, {}.begin() + {});'
-                    line2 = indent + vector.format(
-                        line_type, var_name, vector_or_string, a, vector_or_string, b)
-                else:
-                    vector = 'std::vector<{}> {}({}.begin() + {}, {}.begin() + {});'
-                    line2 = indent + vector.format(
-                        line_type, var_name, vector_or_string, a, vector_or_string, b)
-                    # st()
-                # elif line_type == 'int':
-                # elif line_type == 'float':
-                line[c] = line2
-            elif 's[0:3]' in line[c]:
-                st()
-        return line
-
-    @staticmethod
     def add_static_member_initializers(line, static_members):
         for c in range(0, len(line)):
             if 'main' in line[c]:
@@ -315,12 +324,14 @@ class Transpile:
             if '#' not in line[c] and '#' not in line[c]:
                 line[c] = line[c] \
                     .replace('self.', 'this->').replace('>()];', '>();') \
-                    .replace("'", '"').replace('append', 'push_back').replace('pass', ';') \
+                    .replace('append', 'push_back').replace('pass', ';') \
                     .replace('" +', '" <<').replace('"+', ' << ').replace('+"', ' << "').replace('+ "', '<< "') \
                     .replace(';;;', ';').replace(';;', ';').replace('"<<', '" <<').replace('<<"', '<< "')
             else:
                 if '#include' not in line[c]:
                     line[c] = line[c].replace('#', '//')
+            if 'std::find(' not in line[c]:
+                line[c] = line[c].replace("'", '"')
         return line
 
     @staticmethod
@@ -449,7 +460,6 @@ class Transpile:
             return 'float'
         else:
             return 'int'
-
 
     @staticmethod
     def get_time():

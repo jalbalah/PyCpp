@@ -1,7 +1,7 @@
-#include<fstream>
-#include<iostream>
 #include<vector>
 #include<string>
+#include<iostream>
+#include<fstream>
 
 
 // defining a C++ object X
@@ -49,7 +49,7 @@ public:
         {
             std::cout << i << std::endl;
         }
-        std::cout << "liftoff!" << " " <<  "\n" << std::endl;
+        std::cout << "liftoff!"<< " " <<  "\n" << std::endl;
         for(auto i = 0; i != 10000; ++i)
         {
             x1.arr.push_back(i);
@@ -94,6 +94,10 @@ public:
         std::vector<float> b2(b.begin() + 0, b.begin() + 3);
         std::cout << b2[0] << std::endl;
         std::cout << (b2).size() << std::endl;
+        std::string s3("0123456");
+        int i1 = s3.find("34");
+        auto i2 = i1 + 1;
+        std::cout << i2 << std::endl;
     }
 
     static X x2;

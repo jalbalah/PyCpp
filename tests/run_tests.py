@@ -75,9 +75,10 @@ class Test:
         print(b2[0])
         print(len(b2))
 
-        # s3 = '0123456'
-        # i1 = s3.indexOf('4')
-        # print(i1)
+        s3 = '0123456'
+        i1 = s3.find('34')
+        i2 = i1 + 1
+        print(i2)
 
 
 if __name__ == '__main__':
