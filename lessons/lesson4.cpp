@@ -27,6 +27,6 @@ int main()
     c1.set_name("Pursippany");
     Cat c2;
     c2.set_name("MeowMeow");
-    std::cout << c1.name << " says the number of cats is: " << c1.num_cats << std::endl;
-    std::cout << c2.name << " says the number of cats is: " << c2.num_cats << std::endl;
+    std::cout << c1.name<< " " <<  " says the number of cats is: "<< " " <<  c1.num_cats << std::endl;
+    std::cout << c2.name<< " " <<  " says the number of cats is: "<< " " <<  c2.num_cats << std::endl;
 }

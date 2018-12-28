@@ -16,7 +16,7 @@ public:
     }
     void get_name(auto student_num)
     {
-        std::cout << student_num << ") " << this->name << std::endl;
+        std::cout << student_num + ") " + this->name << std::endl;
     }
 
     std::string name;

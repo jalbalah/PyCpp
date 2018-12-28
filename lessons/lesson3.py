@@ -8,22 +8,28 @@ class Dog:
         # define name property
         self.name = ''
         self.weight = 0
-
-    def set_name(self, new_name):
-        self.name = new_name
-
-    def set_size(self, weight):
-        self.weight = weight
+        self.nicknames = [str]
+        self.favorite_numbers = [int]
 
     def get_name(self):
         print('My name is ' + self.name)
 
     def get_weight(self):
-        print('I weight' + self.weight)
+        print('I weigh: ' + self.weight)
 
 if __name__ == '__main__':
-    x = Dog()
-    x.set_name('john')
-    x.set_size(40)
-    x.get_name()
-    x.get_weight()
+    d = Dog()
+    d.name = 'john'
+    d.weight = 40
+    d.nicknames.append('funnybones')
+    d.nicknames.append('ripcurrent')
+    d.nicknames.append('bowman')
+    d.favorite_numbers.append(7)
+    d.favorite_numbers.append(23)
+
+    d.get_name()
+    d.get_weight()
+    for fav_num in d.favorite_numbers:
+        print(fav_num)
+    for nickname in d.nicknames:
+        print(nickname)

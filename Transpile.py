@@ -181,7 +181,6 @@ class Transpile:
                         find_str = 'int {} = std::find({}.begin(), {}.end(), {}) - {}.begin();'
                         line2 = indent + find_str.format(
                             var_name, vector_or_string, vector_or_string, string_find, vector_or_string)
-                    st()
                     line[c] = line2
                 # bottom of elif
                 elif '=' in line[c] and not 'this->' in line[c] and not 'self.' in line[c] \
@@ -265,7 +264,8 @@ class Transpile:
     def convert_char_to_string(line):
         for c in range(0, len(line)):
             if Transpile.get_assign_type(line[c]) == 'std::string' \
-                    and 'vector' not in line[c]:
+                    and 'vector' not in line[c] and 'this->' not in line[c] \
+                    and not line[c].find('.') < line[c].find('='):
                 i = line[c].find('"')
                 i2 = line[c].find('"', i + 1)
                 line[c] = line[c][0:i] + '("' + line[c][i + 1:i2] + '");'
@@ -292,8 +292,9 @@ class Transpile:
                         if local_var + ' ' in line[c] or local_var + '=' in line[c]:
                             local_var_found = True
                     if not local_var_found:
-                        line[c] = ' ' * Transpile.get_num_indent(line[c]) + 'auto ' + line[c].lstrip()
-                        local_vars.append(line[c][0:line[c].find('=')].strip().replace('auto ', ''))
+                        if line[c].find('.') == -1 or not line[c].find('.') < line[c].find('='):
+                            line[c] = ' ' * Transpile.get_num_indent(line[c]) + 'auto ' + line[c].lstrip()
+                            local_vars.append(line[c][0:line[c].find('=')].strip().replace('auto ', ''))
                 line[c] = line[c].replace(flag, '')
 
         return line
@@ -326,7 +327,8 @@ class Transpile:
                     .replace('self.', 'this->').replace('>()];', '>();') \
                     .replace('append', 'push_back').replace('pass', ';') \
                     .replace('" +', '" <<').replace('"+', ' << ').replace('+"', ' << "').replace('+ "', '<< "') \
-                    .replace(';;;', ';').replace(';;', ';').replace('"<<', '" <<').replace('<<"', '<< "')
+                    .replace(';;;', ';').replace(';;', ';').replace('"<<', '" <<').replace('<<"', '<< "') \
+                    .replace('vector<str>', 'vector<std::string>')
             else:
                 if '#include' not in line[c]:
                     line[c] = line[c].replace('#', '//')

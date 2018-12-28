@@ -7,7 +7,7 @@ class Square:
 # this is another class
 class Rectangle:
     def __init__(self, attitude):
-        print('I am a ' + attitude + ' circle')
+        print('I am a ', attitude, ' circle')
 
 if __name__ == '__main__':
     # create a square object

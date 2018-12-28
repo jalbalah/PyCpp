@@ -16,7 +16,7 @@ class Rectangle
 public:
     Rectangle(auto attitude)
     {
-        std::cout << "I am a " << attitude << " circle" << std::endl;
+        std::cout << "I am a "<< " " <<  attitude<< " " <<  " circle" << std::endl;
     }
 };
 ;

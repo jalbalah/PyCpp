@@ -12,16 +12,16 @@ hello world:
 classes:  
 `./lessons/lesson2`
 
-class properties:  
+class members:  
 `./lessons/lesson3`
 
-shared (static) class variables:  
+static class members:  
 `./lessons/lesson4`
 
 lists and loops:  
 `./lessons/lesson5`
 
-?  
+
 `./lessons/lesson6`
 
 reading and writing files:  
