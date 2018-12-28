@@ -73,6 +73,11 @@ class Test:
         b.append(4)
         b2 = b[0:3]
         print(b2[0])
+        print(len(b2))
+
+        # s3 = '0123456'
+        # i1 = s3.indexOf('4')
+        # print(i1)
 
 
 if __name__ == '__main__':

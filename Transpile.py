@@ -194,14 +194,27 @@ class Transpile:
         for lib in libs_to_add:
             line.insert(0, '#include<{}>'.format(lib))
 
+        # O(N) loops
         line = cls.get_replacements(line)
         line = cls.add_static_member_initializers(line, static_members)
         line = cls.add_auto_for_local_vars(line, class_name, private_members, static_members)
         line = cls.index_str_or_vector(line)
         line = cls.convert_char_to_string(line)
+        line = cls.convert_len_to_size(line)
 
         cpp = '\n'.join(filter(None, line))
         return cpp
+
+    @staticmethod
+    def convert_len_to_size(line):
+        for c in range(0, len(line)):
+            if 'len(' in line[c]:
+                i = line[c].find('len(')
+                i2 = line[c].find(')', i) + 1
+                line2 = line[c][0:i2] + '.size()' + line[c][i2::]
+                line2 = line2.replace('len(', '(')
+                line[c] = line2
+        return line
 
     @staticmethod
     def convert_char_to_string(line):

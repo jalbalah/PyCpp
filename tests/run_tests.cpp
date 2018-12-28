@@ -1,7 +1,7 @@
-#include<iostream>
-#include<string>
 #include<fstream>
+#include<iostream>
 #include<vector>
+#include<string>
 
 
 // defining a C++ object X
@@ -93,6 +93,7 @@ public:
         b.push_back(4);
         std::vector<float> b2(b.begin() + 0, b.begin() + 3);
         std::cout << b2[0] << std::endl;
+        std::cout << (b2).size() << std::endl;
     }
 
     static X x2;
