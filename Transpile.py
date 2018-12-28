@@ -152,9 +152,8 @@ class Transpile:
                     line_type = Transpile.get_assign_type(line[c2])
                     if line_type == 'std::string':
                         line_type = 'char'
-                        vector = 'std::vector<{}> {}({}.begin() + {}, {}.begin() + {});'
-                        line2 = indent + vector.format(
-                            line_type, var_name, vector_or_string, a, vector_or_string, b)
+                        vector = 'auto {} = {}.substr({}, {});'
+                        line2 = indent + vector.format(var_name, vector_or_string, a, b)
                     else:
                         vector = 'std::vector<{}> {}({}.begin() + {}, {}.begin() + {});'
                         line2 = indent + vector.format(
@@ -472,4 +471,5 @@ class Transpile:
         return c2 < 0 or \
                (vector_or_string in line[c2]
                 and 'cout' not in line[c2] and '.find' not in line[c2]
-                and '.append' not in line[c2])
+                and '.append' not in line[c2] and '.size' not in line[c2]
+                and 'len(' not in line[c2])

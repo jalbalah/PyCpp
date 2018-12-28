@@ -83,8 +83,9 @@ class Test:
         i2 = i1 + 1
         print(i2)
         i3 = s3.find('5')
-        s4 = s3[i3:len(s4)]
-        print(s4[0])
+        i4 = len(s3)
+        s4 = s3[i3:i4]
+        print(s4)
 
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
-#include<vector>
 #include<iostream>
+#include<vector>
 #include<string>
 #include<fstream>
 
@@ -77,7 +77,7 @@ public:
         }
         std::cout << "\n" << " " <<  f2[0] << std::endl;
         std::string s("01234");
-        std::vector<char> s2(s.begin() + 0, s.begin() + 3);
+        auto s2 = s.substr(0, 3);
         std::cout << s2[0] << std::endl;
         auto a = std::vector<int>();
         a.push_back(0);
@@ -102,8 +102,9 @@ public:
         auto i2 = i1 + 1;
         std::cout << i2 << std::endl;
         int i3 = s3.find("5");
-        std::vector<char> s4(s3.begin() + i3, s3.begin() + (s4).size());
-        std::cout << s4[0] << std::endl;
+        auto i4 = (s3).size();
+        auto s4 = s3.substr(i3, i4);
+        std::cout << s4 << std::endl;
     }
 
     static X x2;
