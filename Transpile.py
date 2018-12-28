@@ -150,8 +150,6 @@ class Transpile:
                         c2 -= 1
 
                     line_type = Transpile.get_assign_type(line[c2])
-                    if not line_type:
-                        st()
                     if line_type == 'std::string':
                         line_type = 'char'
                         vector = 'std::vector<{}> {}({}.begin() + {}, {}.begin() + {});'
@@ -171,7 +169,7 @@ class Transpile:
                     indent = ' ' * Transpile.get_num_indent(line[c])
 
                     c2 = c - 1
-                    while c2 >= 0 and vector_or_string not in line[c2]:
+                    while c2 >= 0 and ((vector_or_string not in line[c2]) or ('cout' in line[c2])):
                         c2 -= 1
 
                     line_type = Transpile.get_assign_type(line[c2])
