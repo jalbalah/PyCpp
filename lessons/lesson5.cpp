@@ -1,6 +1,6 @@
-#include<string>
 #include<iostream>
 #include<vector>
+#include<string>
 
 
 class Student

@@ -146,7 +146,7 @@ class Transpile:
                     indent = ' ' * Transpile.get_num_indent(line[c])
 
                     c2 = c - 1
-                    while c2 >= 0 and ((vector_or_string not in line[c2]) or ('cout' in line[c2])):
+                    while not cls.found_type(line, c2, vector_or_string):
                         c2 -= 1
 
                     line_type = Transpile.get_assign_type(line[c2])
@@ -169,7 +169,7 @@ class Transpile:
                     indent = ' ' * Transpile.get_num_indent(line[c])
 
                     c2 = c - 1
-                    while c2 >= 0 and ((vector_or_string not in line[c2]) or ('cout' in line[c2])):
+                    while not cls.found_type(line, c2, vector_or_string):
                         c2 -= 1
 
                     line_type = Transpile.get_assign_type(line[c2])
@@ -466,3 +466,10 @@ class Transpile:
     @staticmethod
     def get_time():
         return str(int(datetime.now().microsecond))
+
+    @staticmethod
+    def found_type(line, c2, vector_or_string):
+        return c2 < 0 or \
+               (vector_or_string in line[c2]
+                and 'cout' not in line[c2] and '.find' not in line[c2]
+                and '.append' not in line[c2])
