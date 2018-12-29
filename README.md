@@ -51,9 +51,3 @@ strings and vectors:
 
 reading and writing files:  
 `./lessons/lesson7`
-
-To speed up developement, see in `build.py`:
-```bash
-# comment out to skip compiling lessons
-transpile_and_compile('lessons')
-```
