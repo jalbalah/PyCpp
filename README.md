@@ -2,13 +2,19 @@
 PyCpp converts template code that is modeled 
 after python syntax into C++ code by mapping directly.
 
-Low level C++ instructions tranpiled and compiled, by only coding in a 
+Low level C++ instructions tranpiled and compiled, by coding in a 
 limited capability python environment. 
 
-Quick Start
+# Quick Start
+
+First, download:
+- g++ compiler suite (cygwin, mingw, etc.)
+- python
+
+Put your scripts into the "yourcode" directory. 
 
 See lessons for example code that is tested to compile
-and run. To do the same:
+and run. Then run:
 ```bash
 python build.py
 ``` 
@@ -30,7 +36,7 @@ static class members:
 lists and loops:  
 `./lessons/lesson5`
 
-strings and vectors:
+strings and vectors:  
 `./lessons/lesson6`
 
 reading and writing files:  
