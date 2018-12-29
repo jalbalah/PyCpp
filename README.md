@@ -5,7 +5,7 @@ after python syntax into C++ code by mapping directly.
 Low level C++ instructions tranpiled and compiled, by coding in a 
 limited capability python environment. 
 
-Quick Start
+# Quick Start
 
 First, download:
 - g++ compiler suite (cygwin, mingw, etc.)
