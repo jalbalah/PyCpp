@@ -46,7 +46,7 @@ static class members:
 lists and loops:  
 `./lessons/lesson5`
 
-strings and vectors:  
+strings:  
 `./lessons/lesson6`
 
 reading and writing files:  
