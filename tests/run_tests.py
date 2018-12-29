@@ -101,8 +101,6 @@ class Test:
             print('c4:', c4)
             c4 -= 1
 
-
-
 if __name__ == '__main__':
     t = Test()
     t.run_all_tests()
