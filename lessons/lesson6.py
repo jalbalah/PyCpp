@@ -29,11 +29,13 @@ if __name__ == '__main__':
     a2 = a[3:i2]
     print(a2[0])
 
-    a3 = [float]
-    a3.append(0)
-    a3.append(1)
-    a3.append(2)
-    a3.append(3)
-    a4 = a3[0:1]
-    i3 = len(a4)
-    print(a4[i3])
+    # find in string
+    s3 = '23'
+    i3 = s.find(s3)
+    print('position of 23:', i3)
+
+    # find in list of strings
+    s4 = '3'
+    i4 = a.find(s4)
+    print('position of 3:', i4)
+

@@ -1,7 +1,7 @@
-#include<vector>
-#include<iostream>
-#include<string>
 #include<fstream>
+#include<iostream>
+#include<vector>
+#include<string>
 
 
 // defining a C++ object X
@@ -105,6 +105,14 @@ public:
         auto i4 = (s3).size();
         auto s4 = s3.substr(i3, i4);
         std::cout << s4 << std::endl;
+        auto a3 = std::vector<float>();
+        a3.push_back(0);
+        a3.push_back(1);
+        a3.push_back(2);
+        a3.push_back(3);
+        std::vector<float> a4(a3.begin() + 0, a3.begin() + 1);
+        i4 = (a4).size();
+        std::cout << a4[i4] << std::endl;
         auto c4 = 3;
         while(c4 > 0)
         {

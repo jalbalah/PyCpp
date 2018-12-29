@@ -1,3 +1,4 @@
+#include<algorithm>
 #include<vector>
 #include<string>
 #include<iostream>
@@ -29,12 +30,12 @@ int main()
     // indexing list of strings
     std::vector<std::string> a2(a.begin() + 3, a.begin() + i2);
     std::cout << a2[0] << std::endl;
-    auto a3 = std::vector<float>();
-    a3.push_back(0);
-    a3.push_back(1);
-    a3.push_back(2);
-    a3.push_back(3);
-    std::vector<float> a4(a3.begin() + 0, a3.begin() + 1);
-    auto i3 = (a4).size();
-    std::cout << a4[i3] << std::endl;
+    // find in string
+    std::string s3("23");
+    int i3 = s.find(s3);
+    std::cout << "position of 23:"<< " " <<  i3 << std::endl;
+    // find in list of strings
+    std::string s4("3");
+    int i4 = std::find(a.begin(), a.end(), s4) - a.begin();
+    std::cout << "position of 3:"<< " " <<  i4 << std::endl;
 }

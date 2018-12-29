@@ -87,10 +87,20 @@ class Test:
         s4 = s3[i3:i4]
         print(s4)
 
+        a3 = [float]
+        a3.append(0)
+        a3.append(1)
+        a3.append(2)
+        a3.append(3)
+        a4 = a3[0:1]
+        i4 = len(a4)
+        print(a4[i4])
+
         c4 = 3
         while c4 > 0:
             print('c4:', c4)
             c4 -= 1
+
 
 
 if __name__ == '__main__':
