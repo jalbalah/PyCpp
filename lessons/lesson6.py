@@ -10,8 +10,11 @@ if __name__ == '__main__':
 
     # length of string
     i = len(s)
+    print('length of', s, 'is', i)
+
+    # substring
     s2 = s[1:i]
-    print('length:', s2)
+    print('s2 is', s2)
 
     # length of list of strings
     a = [str]
@@ -23,14 +26,14 @@ if __name__ == '__main__':
     i2 = len(a)
 
     # indexing list of strings
-    #a2 = a[3:i2]
-    #print(a2[0])
+    a2 = a[3:i2]
+    print(a2[0])
 
-    #a3 = [float]
-    #a3.append(0)
-    #a3.append(1)
-    #a3.append(2)
-    #a3.append(3)
-    #a4 = a3[0:1]
-    #i3 = len(a4)
-    #print(a4[i3])
+    a3 = [float]
+    a3.append(0)
+    a3.append(1)
+    a3.append(2)
+    a3.append(3)
+    a4 = a3[0:1]
+    i3 = len(a4)
+    print(a4[i3])
