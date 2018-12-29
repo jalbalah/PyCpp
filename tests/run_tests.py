@@ -87,6 +87,11 @@ class Test:
         s4 = s3[i3:i4]
         print(s4)
 
+        c4 = 3
+        while c4 > 0:
+            print('c4:', c4)
+            c4 -= 1
+
 
 if __name__ == '__main__':
     t = Test()

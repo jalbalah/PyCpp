@@ -138,6 +138,9 @@ class Transpile:
                             indent = ' ' * cls.get_num_indent(line[c])
                             line[c] = indent + '{} << {};\n'.format(var_wf, string_to_write)
                             line[c] += indent + '{}.close();\n'.format(var_wf)
+                elif 'while' in line[c]:
+                    i = line[c].find('while') + 5
+                    line[c] = line[c][0:i] + '(' + line[c][i::].strip()[0:-1] + ')'
                 elif Transpile.between(line[c], ':', '[', ']'):
                     var_name = line[c].strip().replace('auto ', '')
                     var_name = var_name[0:var_name.find(' ')]  # .replace('X', 'auto ')
@@ -366,7 +369,8 @@ class Transpile:
         if line[c] and not_in('//') and not_in('if') and not_in('for') and not_in('class') and not_in('main'):
             if yes_in('=') or (not_in(';') and not_in('void')):
                 if not ('{' in line[c] or '}' in line[c] and not_in('def') and not_in('class')):
-                    line[c] += ';'
+                    if not_in('while('):
+                        line[c] += ';'
         return line
 
 

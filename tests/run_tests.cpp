@@ -1,7 +1,7 @@
 #include<vector>
-#include<iostream>
 #include<fstream>
 #include<string>
+#include<iostream>
 
 
 // defining a C++ object X
@@ -105,6 +105,12 @@ public:
         auto i4 = (s3).size();
         auto s4 = s3.substr(i3, i4);
         std::cout << s4 << std::endl;
+        auto c4 = 3;
+        while(c4 > 0)
+        {
+            std::cout << "c4:"<< " " <<  c4 << std::endl;
+            c4 -= 1;
+        }
     }
 
     static X x2;
