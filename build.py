@@ -25,7 +25,7 @@ if __name__ == '__main__':
 
     def compile(python_file):
         name = python_file.replace('.py', '')
-        build_cmd = 'g++ {}.cpp -o {} -g -O0 -std=c++14'.format(name, name)
+        build_cmd = 'g++ {}.cpp -o {} -g -O4 -std=c++14'.format(name, name)
         print(build_cmd)
         os.system(build_cmd)
 
