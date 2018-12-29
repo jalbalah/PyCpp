@@ -2,7 +2,7 @@
 PyCpp converts template code that is modeled 
 after python syntax into C++ code by mapping directly.
 
-Low level C++ instructions tranpiled and compiled, by only coding in a 
+Low level C++ instructions tranpiled and compiled, by coding in a 
 limited capability python environment. 
 
 Quick Start
