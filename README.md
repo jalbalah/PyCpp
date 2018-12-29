@@ -7,6 +7,10 @@ limited capability python environment.
 
 Quick Start
 
+First, download:
+- g++ compiler suite
+- python
+
 See lessons for example code that is tested to compile
 and run. To do the same:
 ```bash
