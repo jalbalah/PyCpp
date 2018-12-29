@@ -70,12 +70,13 @@ class Transpile:
                     line[c] = line[c].replace('print(', 'std::cout << ')
                     line[c] = line[c][0:line[c].rfind(')')] + " << std::endl;"
                 elif line[c].strip().endswith(']') and not cls.between(line[c], ':', '[', ']'):
+                    libs_to_add.add('vector')
                     typ = line[c][line[c].find('[') + 1:line[c].find(']')]
                     line[c] = line[c][0:line[c].find('[') + 1] + line[c][line[c].find(']')::]
                     line[c] = line[c].replace('[]', 'std::vector<{}>()'.format(typ))
                     if '=' in line[c] and not 'this->' in line[c] and ')' in line[c]:
-                        if entered_constructor:
-                            line[c] = ' ' * cls.get_num_indent(line[c]) + 'auto ' + line[c].lstrip()
+                        # if entered_constructor:
+                        line[c] = ' ' * cls.get_num_indent(line[c]) + 'auto ' + line[c].lstrip()
                 elif lstrip.startswith('for') and 'range' in lstrip:
                     i = line[c].find(' in ') + 4
                     var = line[c][line[c].find('for') + 3:i - 4].replace('(', '').strip()
@@ -151,10 +152,12 @@ class Transpile:
 
                     line_type = Transpile.get_assign_type(line[c2])
                     if line_type == 'std::string':
+                        libs_to_add.add('string')
                         line_type = 'char'
                         vector = 'auto {} = {}.substr({}, {});'
                         line2 = indent + vector.format(var_name, vector_or_string, a, b)
                     else:
+                        libs_to_add.add('vector')
                         vector = 'std::vector<{}> {}({}.begin() + {}, {}.begin() + {});'
                         line2 = indent + vector.format(
                             line_type, var_name, vector_or_string, a, vector_or_string, b)
@@ -195,6 +198,7 @@ class Transpile:
                     if not entered_constructor:
                         if line[c] and not 'class' in line[c] and not '{' in line[c] and '=' in line[c]:
                             var = line[c].strip()
+                            var = var.replace('auto ', '')
                             var = var[0:var.find(' ')]
                             assignment = line[c][line[c].find('=') + 1::].strip()
                             line[c] = ''
@@ -208,6 +212,7 @@ class Transpile:
                     elif '}' in line[c]:
                         if Transpile.get_num_indent(line[c]) == in_class[1]:
                             in_class[0] = False
+                            # static_members = []
                             line[c] += ';'
                             if private_members:
                                 pvt = '\n'
@@ -230,7 +235,6 @@ class Transpile:
                                         pvt += '    {} {};\n'.format(typ,  mbr[0]);
                                 line[c] = pvt + line[c]
                             private_members = []
-                            # static_members = []
                 line = cls.add_semicolon(line, c)
                 line = cls.instantiation(line, c, class_name, entered_constructor)
 
@@ -274,7 +278,6 @@ class Transpile:
 
     @staticmethod
     def add_auto_for_local_vars(line, class_name, private_members, static_members):
-        not_in = lambda x: x not in line[c]
         flag = ' POSSIBLE LOCAL DECLARATION'
         local_vars = []
         for c in range(0, len(line)):
@@ -472,4 +475,4 @@ class Transpile:
                (vector_or_string in line[c2]
                 and 'cout' not in line[c2] and '.find' not in line[c2]
                 and '.append' not in line[c2] and '.size' not in line[c2]
-                and 'len(' not in line[c2])
+                and 'len(' not in line[c2] and '#' not in line[c2])

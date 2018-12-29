@@ -21,7 +21,7 @@ static class members:
 lists and loops:  
 `./lessons/lesson5`
 
-TO DO  
+strings and vectors:
 `./lessons/lesson6`
 
 reading and writing files:  

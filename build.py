@@ -54,7 +54,7 @@ if __name__ == '__main__':
                     wf.write(code.replace('X', 'X{}'.format(i)))
 
     # comment out to skip compiling lessons
-    transpile_and_compile('lessons')
+    # transpile_and_compile('lessons')
 
     # test_generate_large_codebase()
     # transpile_and_compile('tests', do_compile=False)
