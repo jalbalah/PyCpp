@@ -152,8 +152,8 @@ class Transpile:
                     c2 = c - 1
                     while not cls.found_type(line, c2, vector_or_string):
                         c2 -= 1
-
                     line_type = Transpile.get_assign_type(line[c2])
+
                     if line_type == 'std::string':
                         libs_to_add.add('string')
                         line_type = 'char'
@@ -168,9 +168,10 @@ class Transpile:
                 elif 'find(' in line[c]:
                     var_name = line[c].strip().replace('auto ', '')
                     var_name = var_name[0:var_name.find(' ')]  # .replace('X', 'auto ')
-                    vector_or_string = line[c][line[c].find('=') + 1:line[c].find('.find')].strip()
+                    vector_or_string = line[c][line[c].find('=') + 1:line[c].find('.find(')].strip()
                     i = line[c].find('.find(') + 6
                     string_find = line[c][i:line[c].find(')', i)].replace('"', "'")
+                    string_find = string_find.replace("'", '"')
                     indent = ' ' * Transpile.get_num_indent(line[c])
 
                     c2 = c - 1
@@ -178,6 +179,7 @@ class Transpile:
                         c2 -= 1
 
                     line_type = Transpile.get_assign_type(line[c2])
+
                     if line_type == 'std::string':
                         find_str = 'int {} = {}.find({});'
                         line2 = indent + find_str.format(var_name, vector_or_string, string_find)
@@ -476,7 +478,7 @@ class Transpile:
     @staticmethod
     def found_type(line, c2, vector_or_string):
         return c2 < 0 or \
-               (vector_or_string in line[c2]
+               ((vector_or_string + '=' in line[c2] or vector_or_string + ' =' in line[c2])
                 and 'cout' not in line[c2] and '.find' not in line[c2]
                 and '.append' not in line[c2] and '.size' not in line[c2]
                 and 'len(' not in line[c2] and '#' not in line[c2])

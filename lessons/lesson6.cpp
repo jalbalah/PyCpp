@@ -1,7 +1,7 @@
 #include<algorithm>
-#include<vector>
 #include<string>
 #include<iostream>
+#include<vector>
 
 
 ;
@@ -31,11 +31,9 @@ int main()
     std::vector<std::string> a2(a.begin() + 3, a.begin() + i2);
     std::cout << a2[0] << std::endl;
     // find in string
-    std::string s3("23");
-    int i3 = s.find(s3);
+    int i3 = s.find("23");
     std::cout << "position of 23:"<< " " <<  i3 << std::endl;
     // find in list of strings
-    std::string s4("3");
-    int i4 = std::find(a.begin(), a.end(), s4) - a.begin();
+    int i4 = std::find(a.begin(), a.end(), "3") - a.begin();
     std::cout << "position of 3:"<< " " <<  i4 << std::endl;
 }

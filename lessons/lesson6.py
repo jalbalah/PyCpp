@@ -30,12 +30,10 @@ if __name__ == '__main__':
     print(a2[0])
 
     # find in string
-    s3 = '23'
-    i3 = s.find(s3)
+    i3 = s.find('23')
     print('position of 23:', i3)
 
     # find in list of strings
-    s4 = '3'
-    i4 = a.find(s4)
+    i4 = a.find('3')
     print('position of 3:', i4)
 
