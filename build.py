@@ -60,3 +60,5 @@ if __name__ == '__main__':
     # transpile_and_compile('tests', do_compile=False)
     transpile_and_compile('tests')
 
+    transpile_and_compile('yourcode')
+
