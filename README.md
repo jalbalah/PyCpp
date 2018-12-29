@@ -11,8 +11,10 @@ First, download:
 - g++ compiler suite (cygwin, mingw, etc.)
 - python
 
+Put your scripts into the "yourcode" directory. 
+
 See lessons for example code that is tested to compile
-and run. To do the same:
+and run. Then run:
 ```bash
 python build.py
 ``` 
