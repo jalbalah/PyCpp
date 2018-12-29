@@ -8,7 +8,7 @@ limited capability python environment.
 Quick Start
 
 First, download:
-- g++ compiler suite
+- g++ compiler suite (cygwin, mingw, etc.)
 - python
 
 See lessons for example code that is tested to compile
