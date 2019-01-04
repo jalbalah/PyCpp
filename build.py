@@ -58,7 +58,7 @@ if __name__ == '__main__':
                            else parent_path(x, folder) for x in os.listdir(directory(folder))]))
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('foldername', default=False)
+    parser.add_argument('foldername', action='store_false')
     args = parser.parse_args()
     if args.foldername:
         transpile_and_compile(args.foldername)

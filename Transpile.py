@@ -295,7 +295,7 @@ class Transpile:
                 if local_vars:
                     local_vars2 = []
                     for i in range(0, len(local_vars)):
-                        if local_vars[i][0] <= closing_braces[-1]:  # ?
+                        if closing_braces and local_vars[i][0] <= closing_braces[-1]:  # ?
                             local_vars2.append(local_vars[i])
                     local_vars = local_vars2
 

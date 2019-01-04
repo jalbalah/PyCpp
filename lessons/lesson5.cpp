@@ -1,11 +1,11 @@
 #include<string>
-#include<vector>
 #include<iostream>
+#include<vector>
 
 
 class Student
 {
-public:
+    public:
     Student()
     {
         this->name = "";
@@ -19,7 +19,7 @@ public:
 };
 class Classroom
 {
-public:
+    public:
     Classroom()
     {
         this->students = std::vector<Student>();

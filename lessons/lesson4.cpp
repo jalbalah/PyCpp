@@ -1,10 +1,10 @@
-#include<iostream>
 #include<string>
+#include<iostream>
 
 
 class Cat
 {
-public:
+    public:
     // this variable is shared between classes
     Cat()
     {
