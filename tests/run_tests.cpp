@@ -1,7 +1,7 @@
-#include<string>
-#include<fstream>
-#include<iostream>
 #include<vector>
+#include<fstream>
+#include<string>
+#include<iostream>
 
 
 // defining a C++ object X
