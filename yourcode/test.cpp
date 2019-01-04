@@ -1,7 +1,9 @@
-#include<string>
 #include<sstream>
-#include<fstream>
+#include<string>
+#include<vector>
 #include<iostream>
+#include<iterator>
+#include<fstream>
 
 
 ;
@@ -14,20 +16,20 @@ int main()
     std::string s5("3");
     auto s6 = s4 + s5;
     std::cout << s6<< " " <<  "= 0123" << std::endl;
-    std::string s7("");
-    for(auto i = 0; i != 100000; ++i)
+    auto s7 = std::vector<std::string>();
+    for(auto i = 0; i != 10000000; ++i)
     {
-        std::ostringstream ss1546611735803;
-        ss1546611735803 << (i);
-        std::string s8(ss1546611735803.str());
-
-        s7 = s7 + ", (" + s8 + ")";
+        s7.push_back(std::to_string(i));
     }
-    auto l7 = (s7).size();
-    auto s9 = s7.substr(2, l7);
+std::ostringstream os1546613364341;
+std::copy(s7.begin(), s7.end() - 1, 
+          std::ostream_iterator<std::string>(os1546613364341, ","));
+os1546613364341 << *(s7).rbegin();
+std::string s8 = os1546613364341.str();
+;
     std::cout << "writing file" << std::endl;
     std::ofstream f("yourcode/test.txt");
-    f << s9;
+    f << s8;
     f.close();
 
 }

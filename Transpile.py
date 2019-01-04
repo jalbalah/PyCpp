@@ -190,19 +190,26 @@ class Transpile:
                         line2 = indent + find_str.format(
                             var_name, vector_or_string, vector_or_string, string_find, vector_or_string)
                     line[c] = line2
-                elif 'str(' in line[c]:
-                    indent = ' ' * cls.get_num_indent(line[c])
-                    stringstream = 'ss{}'.format(cls.get_time())
-                    line2 = indent + 'std::ostringstream {};\n'.format(stringstream)
-                    i = line[c].find('str(')
-                    i2 = line[c].find(')', i) + 1
-                    num = line[c][i+3:i2]
-                    line2 += indent + '{} << {};\n'.format(stringstream, num)
-                    i3 = line[c].find('=')
-                    var_name = line[c][0:i3].strip()
-                    line2 += indent + 'std::string {}({}.str());\n'.format(var_name, stringstream)
-                    line[c] = line2
+                elif '.join(' in line[c]:
+                    libs_to_add.add('iterator')
                     libs_to_add.add('sstream')
+                    libs_to_add.add('string')
+                    line[c] = line[c].replace("'", '"')
+                    i = line[c].find('"')
+                    i2 = line[c].find('"', i + 1) + 1
+                    i3 = line[c].find('.join(') + 6
+                    i4 = line[c].find(')', i3)
+                    separator = line[c][i:i2]
+                    vector = line[c][i3:i4]
+                    var_name = line[c][0:line[c].find('=')].strip()
+                    ostringstream = 'os{}'.format(cls.get_time())
+                    line2 = 'std::ostringstream {};\n'.format(ostringstream)
+                    copy_string = 'std::copy({}.begin(), {}.end() - 1, \n' + \
+                                  '          std::ostream_iterator<std::string>({}, {}));\n'
+                    line2 += copy_string.format(vector, vector, ostringstream, separator)
+                    line2 += '{} << *({}).rbegin();\n'.format(ostringstream, vector)
+                    line2 += 'std::string {} = {}.str();\n'.format(var_name, ostringstream)
+                    line[c] = line2
                 # bottom of elif
                 elif '=' in line[c] and not 'this->' in line[c] and not 'self.' in line[c] \
                         and not 'auto' in line[c]:
@@ -370,7 +377,8 @@ class Transpile:
                     .replace('append', 'push_back').replace('pass', ';') \
                     .replace('" +', '" <<').replace('"+', ' << ').replace('+"', ' << "').replace('+ "', '<< "') \
                     .replace(';;;', ';').replace(';;', ';').replace('"<<', '" <<').replace('<<"', '<< "') \
-                    .replace('vector<str>', 'vector<std::string>')
+                    .replace('vector<str>', 'vector<std::string>')\
+                    .replace(' str(', ' std::to_string(').replace('(str(', '(std::to_string(')
                 if 'std::cout <<' in line[c]:
                     line[c] = line[c]\
                         .replace(', "', '<< "').replace('",', '" <<').replace(", '", "<< '").replace("' ,", "' <<")

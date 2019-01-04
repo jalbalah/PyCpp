@@ -9,12 +9,10 @@ if __name__ == '__main__':
     s6 = s4 + s5
     print(s6, '= 0123')
 
-    s7 = ''
-    for i in range(0, 100000):
-        s8 = str(i)
-        s7 = s7 + ', (' + s8 + ')'
-    l7 = len(s7)
-    s9 = s7[2:l7]
+    s7 = [str]
+    for i in range(0, 10000000):
+        s7.append(str(i))
+    s8 = ','.join(s7)
     print('writing file')
     f = open('yourcode/test.txt', 'w')
-    f.write(s9)
+    f.write(s8)
