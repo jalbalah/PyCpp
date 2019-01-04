@@ -13,7 +13,7 @@ limited capability python environment.
 
 First, download:
 - g++ compiler suite (cygwin, mingw, etc.)
-- python
+- Python
 
 See "Learning PyCpp" for example code that is tested to compile
 and run.
