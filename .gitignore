@@ -3,3 +3,4 @@ __pycache__
 *.exe
 */*.exe
 tests/run_large_code_base.py
+yourcode/test.txt

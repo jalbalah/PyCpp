@@ -194,6 +194,7 @@ class Transpile:
                     libs_to_add.add('iterator')
                     libs_to_add.add('sstream')
                     libs_to_add.add('string')
+                    indent = ' ' * cls.get_num_indent(line[c])
                     line[c] = line[c].replace("'", '"')
                     i = line[c].find('"')
                     i2 = line[c].find('"', i + 1) + 1
@@ -203,12 +204,12 @@ class Transpile:
                     vector = line[c][i3:i4]
                     var_name = line[c][0:line[c].find('=')].strip()
                     ostringstream = 'os{}'.format(cls.get_time())
-                    line2 = 'std::ostringstream {};\n'.format(ostringstream)
+                    line2 = indent + 'std::ostringstream {};\n'.format(ostringstream)
                     copy_string = 'std::copy({}.begin(), {}.end() - 1, \n' + \
                                   '          std::ostream_iterator<std::string>({}, {}));\n'
-                    line2 += copy_string.format(vector, vector, ostringstream, separator)
-                    line2 += '{} << *({}).rbegin();\n'.format(ostringstream, vector)
-                    line2 += 'std::string {} = {}.str();\n'.format(var_name, ostringstream)
+                    line2 += indent + copy_string.format(vector, vector, ostringstream, separator)
+                    line2 += indent + '{} << *({}).rbegin();\n'.format(ostringstream, vector)
+                    line2 += indent + 'std::string {} = {}.str();\n'.format(var_name, ostringstream)
                     line[c] = line2
                 # bottom of elif
                 elif '=' in line[c] and not 'this->' in line[c] and not 'self.' in line[c] \
