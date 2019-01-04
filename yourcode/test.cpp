@@ -12,4 +12,8 @@ int main()
     std::string s5("3");
     auto s6 = s4 + s5;
     std::cout << s6<< " " <<  "= 0123" << std::endl;
+    // s("");
+    // for i in range(0, 100):
+    //     s += i
+    // print(s)
 }

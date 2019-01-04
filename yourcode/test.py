@@ -9,3 +9,7 @@ if __name__ == '__main__':
     s6 = s4 + s5
     print(s6, '= 0123')
 
+    # s = ''
+    # for i in range(0, 100):
+    #     s += i
+    # print(s)
