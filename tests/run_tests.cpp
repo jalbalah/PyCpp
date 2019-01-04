@@ -1,13 +1,13 @@
-#include<iostream>
-#include<fstream>
 #include<vector>
 #include<string>
+#include<fstream>
+#include<iostream>
 
 
 // defining a C++ object X
 class X
 {
-public:
+    public:
     X()
     {
         ;
@@ -33,11 +33,12 @@ public:
 };
 class Test
 {
-public:
+    public:
     Test()
     {
         this->arr = std::vector<X>();
         this->x4 = X();
+        this->a = std::vector<int>();
     }
     void run_all_tests()
     {
@@ -76,9 +77,13 @@ public:
             }; file.close();
         }
         std::cout << "\n" << " " <<  f2[0] << std::endl;
-        std::string s("01234");
-        auto s2 = s.substr(0, 3);
-        std::cout << s2[0] << std::endl;
+        this->run_loop_test();
+        this->run_vector_test();
+        this->run_find_test();
+        this->run_substring_test();
+    }
+    void run_vector_test()
+    {
         auto a = std::vector<int>();
         a.push_back(0);
         a.push_back(1);
@@ -86,17 +91,38 @@ public:
         a.push_back(3);
         a.push_back(4);
         std::vector<int> a2(a.begin() + 0, a.begin() + 3);
-        std::cout << a2[0] << std::endl;
+        std::cout << a2[0]<< " " <<  "= 0" << std::endl;
         auto b = std::vector<float>();
         b.push_back(1);
         b.push_back(2);
         b.push_back(3);
         b.push_back(4);
         std::vector<float> b2(b.begin() + 0, b.begin() + 3);
-        std::vector<float> b3(b2.begin() + 1, b2.begin() + (b2).size());
-        std::cout << b2[0] << std::endl;
-        std::cout << b3[0] << std::endl;
-        std::cout << (b2).size() << std::endl;
+        auto i0 = (b2).size();
+        std::vector<float> b3(b2.begin() + 1, b2.begin() + i0);
+        std::cout << b2[0]<< " " <<  "= 1" << std::endl;
+        std::cout << b3[0]<< " " <<  "= 2" << std::endl;
+        std::cout << (b2).size()<< "= 3" << std::endl;
+        auto a3 = std::vector<float>();
+        a3.push_back(0);
+        a3.push_back(1);
+        a3.push_back(2);
+        a3.push_back(3);
+        std::vector<float> a4(a3.begin() + 0, a3.begin() + 1);
+        auto i4 = (a4).size();
+        std::cout << a4[i4]<< " " <<  "= 0" << std::endl;
+    }
+    void run_loop_test()
+    {
+        auto c4 = 3;
+        while(c4 > 0)
+        {
+            std::cout << "c4:"<< " " <<  c4 << std::endl;
+            c4 -= 1;
+        }
+    }
+    void run_find_test()
+    {
         std::string s3("0123456");
         int i1 = s3.find("34");
         auto i2 = i1 + 1;
@@ -105,26 +131,24 @@ public:
         auto i4 = (s3).size();
         auto s4 = s3.substr(i3, i4);
         std::cout << s4 << std::endl;
-        auto a3 = std::vector<float>();
-        a3.push_back(0);
-        a3.push_back(1);
-        a3.push_back(2);
-        a3.push_back(3);
-        std::vector<float> a4(a3.begin() + 0, a3.begin() + 1);
-        i4 = (a4).size();
-        std::cout << a4[i4] << std::endl;
-        auto c4 = 3;
-        while(c4 > 0)
-        {
-            std::cout << "c4:"<< " " <<  c4 << std::endl;
-            c4 -= 1;
-        }
+    }
+    void run_substring_test()
+    {
+        std::string s("01234");
+        auto s2 = s.substr(0, 3);
+        std::cout << s2[0]<< " " <<  "= 0" << std::endl;
+        std::string s5("01234567");
+        auto s6 = s5.substr(0, 6);
+        auto s7 = s6.substr(0, 5);
+        auto s8 = s7.substr(0, 4);
+        std::cout << s8<< " " <<  "= 0123" << std::endl;
     }
 
     static X x2;
     static std::vector<std::string> x3;
     std::vector<X> arr;
     X x4;
+    std::vector<int> a;
 };
 float X::x = 0.0;
 X Test::x2 = X();
@@ -135,4 +159,5 @@ int main()
     t.run_all_tests();
     t.x3.push_back("hello");
     t.x3.push_back("world");
+    std::cout << t.x4.x << std::endl;
 }

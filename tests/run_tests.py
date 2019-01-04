@@ -28,6 +28,7 @@ class Test:
     def __init__(self):
         self.arr = [X]
         self.x4 = X()
+        self.a = [int]
 
     def run_all_tests(self):
         # instantiating C++ objects
@@ -54,10 +55,12 @@ class Test:
         f2 = open('tests/test.txt', 'r').readlines()
         print("\n", f2[0])
 
-        s = "01234"
-        s2 = s[0:3]
-        print(s2[0])
+        self.run_loop_test()
+        self.run_vector_test()
+        self.run_find_test()
+        self.run_substring_test()
 
+    def run_vector_test(self):
         a = [int]
         a.append(0)
         a.append(1)
@@ -65,7 +68,7 @@ class Test:
         a.append(3)
         a.append(4)
         a2 = a[0:3]
-        print(a2[0])
+        print(a2[0], '= 0')
 
         b = [float]
         b.append(1)
@@ -73,11 +76,28 @@ class Test:
         b.append(3)
         b.append(4)
         b2 = b[0:3]
-        b3 = b2[1:len(b2)]
-        print(b2[0])
-        print(b3[0])
-        print(len(b2))
+        i0 = len(b2)
+        b3 = b2[1:i0]
+        print(b2[0], '= 1')
+        print(b3[0], '= 2')
+        print(len(b2), '= 3')
 
+        a3 = [float]
+        a3.append(0)
+        a3.append(1)
+        a3.append(2)
+        a3.append(3)
+        a4 = a3[0:1]
+        i4 = len(a4)
+        print(a4[i4], '= 0')
+
+    def run_loop_test(self):
+        c4 = 3
+        while c4 > 0:
+            print('c4:', c4)
+            c4 -= 1
+
+    def run_find_test(self):
         s3 = '0123456'
         i1 = s3.find('34')
         i2 = i1 + 1
@@ -87,22 +107,20 @@ class Test:
         s4 = s3[i3:i4]
         print(s4)
 
-        a3 = [float]
-        a3.append(0)
-        a3.append(1)
-        a3.append(2)
-        a3.append(3)
-        a4 = a3[0:1]
-        i4 = len(a4)
-        print(a4[i4])
+    def run_substring_test(self):
+        s = "01234"
+        s2 = s[0:3]
+        print(s2[0], '= 0')
 
-        c4 = 3
-        while c4 > 0:
-            print('c4:', c4)
-            c4 -= 1
+        s5 = '01234567'
+        s6 = s5[0:6]
+        s7 = s6[0:5]
+        s8 = s7[0:4]
+        print(s8, '= 0123')
 
 if __name__ == '__main__':
     t = Test()
     t.run_all_tests()
     t.x3.append("hello")
     t.x3.append("world")
+    print(t.x4.x)

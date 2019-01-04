@@ -212,7 +212,7 @@ class Transpile:
                                     assignment = clas
                             private_members.append(('static ' + var, assignment))
                     if '{' in line[c] and not in_class_done:
-                        line[c] += '\npublic:'
+                        line[c] += '\n' + ' ' * cls.get_num_indent(line[c]) + '    public:'
                         in_class_done = True
                     elif '}' in line[c]:
                         if Transpile.get_num_indent(line[c]) == in_class[1]:
@@ -263,7 +263,7 @@ class Transpile:
             if 'len(' in line[c]:
                 i = line[c].find('len(')
                 i2 = line[c].find(')', i) + 1
-                line2 = line[c][0:i2] + '.size()' + line[c][i2::]
+                line2 = line[c][0:i] + line[c][i:i2].replace('len', '') + '.size()' + line[c][i2::]
                 line2 = line2.replace('len(', '(')
                 line[c] = line2
         return line
@@ -272,7 +272,7 @@ class Transpile:
     def convert_char_to_string(line):
         for c in range(0, len(line)):
             if Transpile.get_assign_type(line[c]) == 'std::string' \
-                    and 'vector' not in line[c] and 'this->' not in line[c] \
+                    and 'vector' not in line[c] and 'this->' not in line[c] and '.substr(' not in line[c]\
                     and (line[c].find('.') == -1 or not line[c].find('.') < line[c].find('=')):
                 i = line[c].find('"')
                 i2 = line[c].find('"', i + 1)
@@ -285,7 +285,20 @@ class Transpile:
     def add_auto_for_local_vars(line, class_name, private_members, static_members):
         flag = ' POSSIBLE LOCAL DECLARATION'
         local_vars = []
+        closing_braces = []  # what indents of scope are open
         for c in range(0, len(line)):
+            if '{' in line[c]:
+                indent = Transpile.get_num_indent(line[c])
+                closing_braces.append(indent)
+            elif '}' in line[c]:
+                _ = closing_braces.pop()
+                if local_vars:
+                    local_vars2 = []
+                    for i in range(0, len(local_vars)):
+                        if local_vars[i][0] <= closing_braces[-1]:  # ?
+                            local_vars2.append(local_vars[i])
+                    local_vars = local_vars2
+
             if flag in line[c]:
                 static_mem_found = False
                 for static_mem in static_members:
@@ -296,12 +309,20 @@ class Transpile:
                 if not static_mem_found:
                     local_var_found = False
                     for local_var in local_vars:
-                        if local_var + ' ' in line[c] or local_var + '=' in line[c]:
-                            local_var_found = True
+                        indent = local_var[0]
+                        local_var = local_var[1]
+                        if indent <= Transpile.get_num_indent(line[c]):
+                            if local_var + ' =' in line[c] or local_var + '=' in line[c] \
+                                    or local_var + ' -=' in line[c] or local_var + ' +=' in line[c]:
+                                local_var_found = True
                     if not local_var_found:
                         if line[c].find('.') == -1 or not line[c].find('.') < line[c].find('='):
                             line[c] = ' ' * Transpile.get_num_indent(line[c]) + 'auto ' + line[c].lstrip()
-                            local_vars.append(line[c][0:line[c].find('=')].strip().replace('auto ', ''))
+                            local_vars.append((Transpile.get_num_indent(line[c]),
+                                               line[c][0:line[c].find('=')]
+                                               .replace('auto ', '').replace('-', '').strip()))
+                    elif 'i4' in line[c]:
+                        st()
                 line[c] = line[c].replace(flag, '')
 
         return line
@@ -336,6 +357,9 @@ class Transpile:
                     .replace('" +', '" <<').replace('"+', ' << ').replace('+"', ' << "').replace('+ "', '<< "') \
                     .replace(';;;', ';').replace(';;', ';').replace('"<<', '" <<').replace('<<"', '<< "') \
                     .replace('vector<str>', 'vector<std::string>')
+                if 'std::cout <<' in line[c]:
+                    line[c] = line[c]\
+                        .replace(', "', '<< "').replace('",', '" <<').replace(", '", "<< '").replace("' ,", "' <<")
             else:
                 if '#include' not in line[c]:
                     line[c] = line[c].replace('#', '//')
@@ -458,6 +482,8 @@ class Transpile:
 
     @staticmethod
     def get_assign_type(line_c):
+        if '.substr(' in line_c:
+            return 'std::string'
         line_c = line_c[line_c.find('=') + 1:line_c.find(';')].strip()
         if not line_c.strip():
             return
@@ -478,7 +504,8 @@ class Transpile:
     @staticmethod
     def found_type(line, c2, vector_or_string):
         return c2 < 0 or \
-               ((vector_or_string + '=' in line[c2] or vector_or_string + ' =' in line[c2])
+               ((vector_or_string + '=' in line[c2] or vector_or_string + ' =' in line[c2]
+                 or ' ' + vector_or_string + '(' in line[c2])
                 and 'cout' not in line[c2] and '.find' not in line[c2]
                 and '.append' not in line[c2] and '.size' not in line[c2]
                 and 'len(' not in line[c2] and '#' not in line[c2])
