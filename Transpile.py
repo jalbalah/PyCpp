@@ -1,6 +1,6 @@
 
 from pdb import set_trace as st
-from datetime import datetime
+from time import time
 
 
 class Transpile:
@@ -152,6 +152,7 @@ class Transpile:
                     c2 = c - 1
                     while not cls.found_type(line, c2, vector_or_string):
                         c2 -= 1
+
                     line_type = Transpile.get_assign_type(line[c2])
 
                     if line_type == 'std::string':
@@ -189,6 +190,19 @@ class Transpile:
                         line2 = indent + find_str.format(
                             var_name, vector_or_string, vector_or_string, string_find, vector_or_string)
                     line[c] = line2
+                elif 'str(' in line[c]:
+                    indent = ' ' * cls.get_num_indent(line[c])
+                    stringstream = 'ss{}'.format(cls.get_time())
+                    line2 = indent + 'std::ostringstream {};\n'.format(stringstream)
+                    i = line[c].find('str(')
+                    i2 = line[c].find(')', i) + 1
+                    num = line[c][i+3:i2]
+                    line2 += indent + '{} << {};\n'.format(stringstream, num)
+                    i3 = line[c].find('=')
+                    var_name = line[c][0:i3].strip()
+                    line2 += indent + 'std::string {}({}.str());\n'.format(var_name, stringstream)
+                    line[c] = line2
+                    libs_to_add.add('sstream')
                 # bottom of elif
                 elif '=' in line[c] and not 'this->' in line[c] and not 'self.' in line[c] \
                         and not 'auto' in line[c]:
@@ -499,7 +513,7 @@ class Transpile:
 
     @staticmethod
     def get_time():
-        return str(int(datetime.now().microsecond))
+        return str(int(1000 * time()))
 
     @staticmethod
     def found_type(line, c2, vector_or_string):
@@ -508,4 +522,5 @@ class Transpile:
                  or ' ' + vector_or_string + '(' in line[c2])
                 and 'cout' not in line[c2] and '.find' not in line[c2]
                 and '.append' not in line[c2] and '.size' not in line[c2]
-                and 'len(' not in line[c2] and '#' not in line[c2])
+                and 'len(' not in line[c2] and '#' not in line[c2]
+                and vector_or_string not in line[c2].replace(vector_or_string, '', 1))
