@@ -23,6 +23,10 @@ Then run:
 ```bash
 python build.py yourcode
 ``` 
+To run the executable:
+```bash
+./yourcode/test
+```
 
 For tests, run:
 ```bash
