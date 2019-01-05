@@ -69,7 +69,8 @@ class Transpile:
                     line[c] = line[c][0:i] + args + line[c][i2::]
                     line[c] = line[c].replace('print(', 'std::cout << ')
                     line[c] = line[c][0:line[c].rfind(')')] + " << std::endl;"
-                elif line[c].strip().endswith(']') and not cls.between(line[c], ':', '[', ']'):
+                elif line[c].strip().endswith(']') and not cls.between(line[c], ':', '[', ']') \
+                        and line[c][line[c].find('[') + 1:line[c].find(']')] in ('str', 'int', 'float'):
                     libs_to_add.add('vector')
                     typ = line[c][line[c].find('[') + 1:line[c].find(']')]
                     if typ == 'str' or typ == 'string':
@@ -341,8 +342,6 @@ class Transpile:
                                     or line[c].strip().startswith(local_var + ' -=')\
                                     or line[c].strip().startswith(local_var + ' +='):
                                 local_var_found = True
-                    if 'ls6' in line[c]:
-                        st()
                     if not local_var_found:
                         if line[c].find('.') == -1 or not line[c].find('.') < line[c].find('='):
                             line[c] = ' ' * Transpile.get_num_indent(line[c]) + 'auto ' + line[c].lstrip()

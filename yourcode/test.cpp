@@ -1,5 +1,5 @@
-#include<string>
 #include<vector>
+#include<string>
 
 
 ;
@@ -19,7 +19,7 @@ int main()
     auto ls6 = (s6).size();
     for(auto i = 0; i != ls6; ++i)
     {
-        auto ix = s6std::vector<i>();
+        auto ix = s6[i];
         ss = ss + ix;
     }
     // print(s2, "= 0123")
