@@ -31,11 +31,19 @@ class Test:
         self.a = [int]
 
     def run_all_tests(self):
-        # instantiating C++ objects
+        self.run_obj_range_iter_test()
+        self.run_file_test()
+        self.run_vector_test()
+        self.run_loop_test()
+        self.run_find_test()
+        self.run_substring_test()
+        self.run_find_type_test()
+        self.run_join_write_test()
+
+    def run_obj_range_iter_test(self):
         x1 = X(1, 2.0)
         print(x1.a, "\n")
 
-        # range loop
         for i in range(10, 0, -1):
             print(i)
         print('liftoff!', '\n')
@@ -43,22 +51,16 @@ class Test:
         for i in range(0, 10000):
             x1.arr.append(i)
 
-        # iterator to loop through container
         for i in x1.arr:
             if i > 9995:
                 print(i)
 
-
+    def run_file_test(self):
         f = open('tests/test.txt', 'w')
         f.write('hello\nworld')
-        
+
         f2 = open('tests/test.txt', 'r').readlines()
         print("\n", f2[0])
-
-        self.run_loop_test()
-        self.run_vector_test()
-        self.run_find_test()
-        self.run_substring_test()
 
     def run_vector_test(self):
         a = [int]
@@ -117,6 +119,24 @@ class Test:
         s7 = s6[0:5]
         s8 = s7[0:4]
         print(s8, '= 0123')
+
+    def run_find_type_test(self):
+        s = '0123456'
+        s2 = s[0:5]
+        s3 = s2[0:4]
+        s4 = s3[0:3]
+        s5 = '3'
+        s6 = s4 + s5
+        print(s6, '= 0123')
+
+    def run_join_write_test(self):
+        s7 = [str]
+        for i in range(0, 10000000):
+            s7.append(str(i))
+        s8 = ','.join(s7)
+        print('writing file')
+        f = open('yourcode/test.txt', 'w')
+        f.write(s8)
 
 if __name__ == '__main__':
     t = Test()

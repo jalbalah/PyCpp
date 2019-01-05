@@ -155,6 +155,7 @@ class Transpile:
                     line_type = Transpile.get_assign_type(line[c2])
 
                     if line_type == 'std::string':
+                        # st()
                         libs_to_add.add('string')
                         line_type = 'char'
                         vector = 'auto {} = {}.substr({}, {});'

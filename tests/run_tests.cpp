@@ -1,6 +1,8 @@
-#include<iostream>
-#include<string>
 #include<fstream>
+#include<sstream>
+#include<string>
+#include<iterator>
+#include<iostream>
 #include<vector>
 
 
@@ -42,10 +44,19 @@ class Test
     }
     void run_all_tests()
     {
-        // instantiating C++ objects
+        this->run_obj_range_iter_test();
+        this->run_file_test();
+        this->run_vector_test();
+        this->run_loop_test();
+        this->run_find_test();
+        this->run_substring_test();
+        this->run_find_type_test();
+        this->run_join_write_test();
+    }
+    void run_obj_range_iter_test()
+    {
         X x1(1, 2.0);
         std::cout << x1.a<< " " <<  "\n" << std::endl;
-        // range loop
         for(auto i = 10; i != 0; i += -1)
         {
             std::cout << i << std::endl;
@@ -55,7 +66,6 @@ class Test
         {
             x1.arr.push_back(i);
         }
-        // iterator to loop through container
         for(auto it = x1.arr.begin(); it != x1.arr.end(); ++it)
         {
             auto i = *it;
@@ -64,6 +74,9 @@ class Test
                 std::cout << i << std::endl;
             }
         }
+    }
+    void run_file_test()
+    {
         std::ofstream f("tests/test.txt");
         f << "hello\nworld";
         f.close();
@@ -77,10 +90,6 @@ class Test
             }; file.close();
         }
         std::cout << "\n" << " " <<  f2[0] << std::endl;
-        this->run_loop_test();
-        this->run_vector_test();
-        this->run_find_test();
-        this->run_substring_test();
     }
     void run_vector_test()
     {
@@ -142,6 +151,35 @@ class Test
         auto s7 = s6.substr(0, 5);
         auto s8 = s7.substr(0, 4);
         std::cout << s8<< " " <<  "= 0123" << std::endl;
+    }
+    void run_find_type_test()
+    {
+        std::string s("0123456");
+        auto s2 = s.substr(0, 5);
+        auto s3 = s2.substr(0, 4);
+        auto s4 = s3.substr(0, 3);
+        std::string s5("3");
+        auto s6 = s4 + s5;
+        std::cout << s6<< " " <<  "= 0123" << std::endl;
+    }
+    void run_join_write_test()
+    {
+        auto s7 = std::vector<std::string>();
+        for(auto i = 0; i != 10000000; ++i)
+        {
+            s7.push_back(std::to_string(i));
+        }
+        std::ostringstream os1546691859676;
+        std::copy(s7.begin(), s7.end() - 1, 
+              std::ostream_iterator<decltype(s7[0])>(os1546691859676, ","));
+        os1546691859676 << *(s7).rbegin();
+        std::string s8 = os1546691859676.str();
+;
+        std::cout << "writing file" << std::endl;
+        std::ofstream f("yourcode/test.txt");
+        f << s8;
+        f.close();
+
     }
 
     static X x2;
