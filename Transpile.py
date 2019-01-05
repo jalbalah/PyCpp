@@ -72,6 +72,8 @@ class Transpile:
                 elif line[c].strip().endswith(']') and not cls.between(line[c], ':', '[', ']'):
                     libs_to_add.add('vector')
                     typ = line[c][line[c].find('[') + 1:line[c].find(']')]
+                    if typ == 'str' or typ == 'string':
+                        libs_to_add.add('string')
                     line[c] = line[c][0:line[c].find('[') + 1] + line[c][line[c].find(']')::]
                     line[c] = line[c].replace('[]', 'std::vector<{}>()'.format(typ))
                     if '=' in line[c] and not 'this->' in line[c] and ')' in line[c]:
@@ -155,7 +157,6 @@ class Transpile:
                     line_type = Transpile.get_assign_type(line[c2])
 
                     if line_type == 'std::string':
-                        # st()
                         libs_to_add.add('string')
                         line_type = 'char'
                         vector = 'auto {} = {}.substr({}, {});'
@@ -182,6 +183,7 @@ class Transpile:
                     line_type = Transpile.get_assign_type(line[c2])
 
                     if line_type == 'std::string':
+                        libs_to_add.add('string')
                         find_str = 'int {} = {}.find({});'
                         line2 = indent + find_str.format(var_name, vector_or_string, string_find)
                     else:
