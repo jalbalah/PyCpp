@@ -22,7 +22,7 @@ class Transpile:
 
         for c in range(0, len(self.line)):
             lstrip = self.line[c].lstrip().replace(' ', '')
-            if '#' in lstrip:
+            if '#' in lstrip or '{' in lstrip or '}' in lstrip:
                 pass
             else:
                 if lstrip.startswith('class'):
@@ -323,32 +323,34 @@ class Transpile:
                         if closing_braces and local_vars[i][0] <= closing_braces[-1]:  # ?
                             local_vars2.append(local_vars[i])
                     local_vars = local_vars2
-
-            if flag in self.line[c]:
-                static_mem_found = False
-                for static_mem in self.static_members:
-                    i = static_mem.find('::') + 2
-                    static_mem = static_mem[i:static_mem.find(' ', i)]
-                    if static_mem in self.line[c]:
-                        static_mem_found = True
-                if not static_mem_found:
-                    local_var_found = False
-                    for local_var in local_vars:
-                        indent = local_var[0]
-                        local_var = local_var[1]
-                        if indent <= self.get_num_indent(self.line[c]):
-                            if self.line[c].strip().startswith(local_var + ' =') \
-                                    or self.line[c].strip().startswith(local_var + '=') \
-                                    or self.line[c].strip().startswith(local_var + ' -=')\
-                                    or self.line[c].strip().startswith(local_var + ' +='):
-                                local_var_found = True
-                    if not local_var_found:
-                        if self.line[c].find('.') == -1 or not self.line[c].find('.') < self.line[c].find('='):
-                            self.line[c] = ' ' * self.get_num_indent(self.line[c]) + 'auto ' + self.line[c].lstrip()
-                            local_vars.append((self.get_num_indent(self.line[c]),
-                                               self.line[c][0:self.line[c].find('=')]
-                                               .replace('auto ', '').replace('-', '').strip()))
-                self.line[c] = self.line[c].replace(flag, '')
+            else:
+                if 's = [str]' in line[c]:
+                    st()
+                if flag in self.line[c]:
+                    static_mem_found = False
+                    for static_mem in self.static_members:
+                        i = static_mem.find('::') + 2
+                        static_mem = static_mem[i:static_mem.find(' ', i)]
+                        if static_mem in self.line[c]:
+                            static_mem_found = True
+                    if not static_mem_found:
+                        local_var_found = False
+                        for local_var in local_vars:
+                            indent = local_var[0]
+                            local_var = local_var[1]
+                            if indent <= self.get_num_indent(self.line[c]):
+                                if self.line[c].strip().startswith(local_var + ' =') \
+                                        or self.line[c].strip().startswith(local_var + '=') \
+                                        or self.line[c].strip().startswith(local_var + ' -=')\
+                                        or self.line[c].strip().startswith(local_var + ' +='):
+                                    local_var_found = True
+                        if not local_var_found:
+                            if self.line[c].find('.') == -1 or not self.line[c].find('.') < self.line[c].find('='):
+                                self.line[c] = ' ' * self.get_num_indent(self.line[c]) + 'auto ' + self.line[c].lstrip()
+                                local_vars.append((self.get_num_indent(self.line[c]),
+                                                   self.line[c][0:self.line[c].find('=')]
+                                                   .replace('auto ', '').replace('-', '').strip()))
+                    self.line[c] = self.line[c].replace(flag, '')
         return self.line
 
     def add_static_member_initializers(self):
