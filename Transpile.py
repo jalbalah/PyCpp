@@ -336,9 +336,13 @@ class Transpile:
                         indent = local_var[0]
                         local_var = local_var[1]
                         if indent <= Transpile.get_num_indent(line[c]):
-                            if local_var + ' =' in line[c] or local_var + '=' in line[c] \
-                                    or local_var + ' -=' in line[c] or local_var + ' +=' in line[c]:
+                            if line[c].strip().startswith(local_var + ' =') \
+                                    or line[c].strip().startswith(local_var + '=') \
+                                    or line[c].strip().startswith(local_var + ' -=')\
+                                    or line[c].strip().startswith(local_var + ' +='):
                                 local_var_found = True
+                    if 'ls6' in line[c]:
+                        st()
                     if not local_var_found:
                         if line[c].find('.') == -1 or not line[c].find('.') < line[c].find('='):
                             line[c] = ' ' * Transpile.get_num_indent(line[c]) + 'auto ' + line[c].lstrip()
