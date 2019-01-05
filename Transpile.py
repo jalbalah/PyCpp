@@ -204,9 +204,9 @@ class Transpile:
                     var_name = line[c][0:line[c].find('=')].strip()
                     ostringstream = 'os{}'.format(cls.get_time())
                     line2 = indent + 'std::ostringstream {};\n'.format(ostringstream)
-                    copy_string = 'std::copy({}.begin(), {}.end() - 1, \n' + \
-                                  '          std::ostream_iterator<std::string>({}, {}));\n'
-                    line2 += indent + copy_string.format(vector, vector, ostringstream, separator)
+                    copy_string = indent + 'std::copy({}.begin(), {}.end() - 1, \n' + \
+                                  '              std::ostream_iterator<decltype({}[0])>({}, {}));\n'
+                    line2 += copy_string.format(vector, vector, vector, ostringstream, separator)
                     line2 += indent + '{} << *({}).rbegin();\n'.format(ostringstream, vector)
                     line2 += indent + 'std::string {} = {}.str();\n'.format(var_name, ostringstream)
                     line[c] = line2

@@ -1,9 +1,9 @@
+#include<string>
 #include<sstream>
 #include<vector>
-#include<string>
+#include<iterator>
 #include<fstream>
 #include<iostream>
-#include<iterator>
 
 
 ;
@@ -21,11 +21,11 @@ int main()
     {
         s7.push_back(std::to_string(i));
     }
-    std::ostringstream os1546613888202;
+    std::ostringstream os1546691262093;
     std::copy(s7.begin(), s7.end() - 1, 
-          std::ostream_iterator<std::string>(os1546613888202, ","));
-    os1546613888202 << *(s7).rbegin();
-    std::string s8 = os1546613888202.str();
+              std::ostream_iterator<decltype(s7[0])>(os1546691262093, ","));
+    os1546691262093 << *(s7).rbegin();
+    std::string s8 = os1546691262093.str();
 ;
     std::cout << "writing file" << std::endl;
     std::ofstream f("yourcode/test.txt");
