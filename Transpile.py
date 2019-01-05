@@ -152,7 +152,6 @@ class Transpile:
                     c2 = c - 1
                     while not cls.found_type(line, c2, vector_or_string):
                         c2 -= 1
-
                     line_type = Transpile.get_assign_type(line[c2])
 
                     if line_type == 'std::string':
@@ -532,4 +531,4 @@ class Transpile:
                 and 'cout' not in line[c2] and '.find' not in line[c2]
                 and '.append' not in line[c2] and '.size' not in line[c2]
                 and 'len(' not in line[c2] and '#' not in line[c2]
-                and vector_or_string not in line[c2].replace(vector_or_string, '', 1))
+                and vector_or_string + '[' not in line[c2][line[c2].find('=')::])
