@@ -78,7 +78,6 @@ class Transpile:
                     line[c] = line[c][0:line[c].find('[') + 1] + line[c][line[c].find(']')::]
                     line[c] = line[c].replace('[]', 'std::vector<{}>()'.format(typ))
                     if '=' in line[c] and not 'this->' in line[c] and ')' in line[c]:
-                        # if entered_constructor:
                         line[c] = ' ' * cls.get_num_indent(line[c]) + 'auto ' + line[c].lstrip()
                 elif lstrip.startswith('for') and 'range' in lstrip:
                     i = line[c].find(' in ') + 4
