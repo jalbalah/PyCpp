@@ -347,8 +347,6 @@ class Transpile:
                             local_vars.append((Transpile.get_num_indent(line[c]),
                                                line[c][0:line[c].find('=')]
                                                .replace('auto ', '').replace('-', '').strip()))
-                    elif 'i4' in line[c]:
-                        st()
                 line[c] = line[c].replace(flag, '')
 
         return line

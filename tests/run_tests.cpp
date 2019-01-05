@@ -1,9 +1,9 @@
-#include<fstream>
+#include<vector>
 #include<sstream>
 #include<string>
+#include<fstream>
 #include<iterator>
 #include<iostream>
-#include<vector>
 
 
 // defining a C++ object X
@@ -169,11 +169,11 @@ class Test
         {
             s7.push_back(std::to_string(i));
         }
-        std::ostringstream os1546691859676;
+        std::ostringstream os1546716680102;
         std::copy(s7.begin(), s7.end() - 1, 
-              std::ostream_iterator<decltype(s7[0])>(os1546691859676, ","));
-        os1546691859676 << *(s7).rbegin();
-        std::string s8 = os1546691859676.str();
+              std::ostream_iterator<decltype(s7[0])>(os1546716680102, ","));
+        os1546716680102 << *(s7).rbegin();
+        std::string s8 = os1546716680102.str();
 ;
         std::cout << "writing file" << std::endl;
         std::ofstream f("yourcode/test.txt");

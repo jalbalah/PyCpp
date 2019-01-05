@@ -60,9 +60,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('foldername', default='')
     args = parser.parse_args()
-    if args.foldername:
-        transpile_and_compile(args.foldername)
-    else:
+    if args.foldername == 'lty':
         # comment out to skip compiling lessons
         transpile_and_compile('lessons')
 
@@ -71,4 +69,6 @@ if __name__ == '__main__':
         transpile_and_compile('tests')
 
         transpile_and_compile('yourcode')
+    else:
+        transpile_and_compile(args.foldername)
 
