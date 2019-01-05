@@ -10,7 +10,7 @@ from pdb import set_trace as st
 def transpile(python_files):
     for pyf in python_files:
         with open(pyf) as rf:
-            tupl = Transpile(rf.readlines())  # rf.read().split('\n')
+            tupl = Transpile(rf.readlines()).cpp  # rf.read().split('\n')
         with open(pyf.replace('.py', '.cpp'), 'w') as wf:
             wf.write(tupl)
 
@@ -60,9 +60,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('foldername', default='')
     args = parser.parse_args()
-    if args.foldername:
-        transpile_and_compile(args.foldername)
-    else:
+    if args.foldername == 'lty':
         # comment out to skip compiling lessons
         transpile_and_compile('lessons')
 
@@ -71,4 +69,6 @@ if __name__ == '__main__':
         transpile_and_compile('tests')
 
         transpile_and_compile('yourcode')
+    else:
+        transpile_and_compile(args.foldername)
 

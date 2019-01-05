@@ -5,316 +5,317 @@ from time import time
 
 class Transpile:
     
-    def __new__(cls, line):
+    def __init__(self, line):
         """ return tuple of .h and .cpp strings to write to file """
-        cpp = ''
-        line = Transpile.get_indented(line)
+        self.cpp = ''
+        self.line = line
+        self.line = self.get_indented()
 
-        class_name = []
-        libs_to_add = set({})
-        in_class = [False, -1]
-        in_class_done = True
-        entered_constructor = False
-        private_members = []
-        static_members = []
-        write_files = []
+        self.class_name = []
+        self.libs_to_add = set({})
+        self.in_class = [False, -1]
+        self.in_class_done = True
+        self.entered_constructor = False
+        self.private_members = []
+        self.static_members = []
+        self.write_files = []
 
-        for c in range(0, len(line)):
-            lstrip = line[c].lstrip().replace(' ', '')
+        for c in range(0, len(self.line)):
+            lstrip = self.line[c].lstrip().replace(' ', '')
             if '#' in lstrip:
                 pass
             else:
                 if lstrip.startswith('class'):
-                    in_class[0] = True
-                    in_class_done = False
-                    in_class[1] = Transpile.get_num_indent(line[c])
-                    entered_constructor = False
-                    cn = line[c][line[c].find('class ') + 6::].replace(":", "")
-                    class_name.append(cn)
-                    line[c] = 'class {}'.format(class_name[-1])
+                    # line_class()
+                    self.in_class[0] = True
+                    self.in_class_done = False
+                    self.in_class[1] = self.get_num_indent(self.line[c])
+                    self.entered_constructor = False
+                    cn = self.line[c][self.line[c].find('class ') + 6::].replace(":", "")
+                    self.class_name.append(cn)
+                    self.line[c] = 'class {}'.format(self.class_name[-1])
                 elif lstrip.startswith('def__init__'):
-                    entered_constructor = True
-                    args = Transpile.get_args(line, c)
-                    line[c] = \
-                        line[c][0:line[c].find('def')] \
-                        + class_name[-1] \
+                    self.entered_constructor = True
+                    args = self.get_args(c)
+                    self.line[c] = \
+                        self.line[c][0:self.line[c].find('def')] \
+                        + self.class_name[-1] \
                         + '(' + ', '.join(['auto ' + str(x) for x in args]) + ')'
                     c += 2
                     c2 = c
-                    while '}' not in line[c2] and c2 < len(line):
-                        if 'self.' in line[c2]:
-                            line[c2] = line[c2].replace('self.', 'this->')
-                            i = line[c2].find('->') + 2
-                            i2 = line[c2].find('=') + 1
-                            private_members.append((line[c2][i:line[c2].find(' ', i)],
-                                                    line[c2][i2::]))
+                    while '}' not in self.line[c2] and c2 < len(self.line):
+                        if 'self.' in self.line[c2]:
+                            self.line[c2] = self.line[c2].replace('self.', 'this->')
+                            i = self.line[c2].find('->') + 2
+                            i2 = self.line[c2].find('=') + 1
+                            self.private_members.append((self.line[c2][i:self.line[c2].find(' ', i)],
+                                                    self.line[c2][i2::]))
                         c2 += 1
                 elif lstrip.startswith('def'):
-                    args = Transpile.get_args(line, c)
-                    func_name = line[c][line[c].find('def ') + 4:line[c].find('(')]
-                    line[c] = \
-                        line[c][0:line[c].find('def')] + \
+                    args = self.get_args(c)
+                    func_name = self.line[c][self.line[c].find('def ') + 4:self.line[c].find('(')]
+                    self.line[c] = \
+                        self.line[c][0:self.line[c].find('def')] + \
                         func_name + \
                         '(' + ','.join(['auto ' + str(x) for x in args]) + ')'
-                    return_type = 'void ' if '{' in line[c + 1] else ''
-                    i = line[c].find(line[c].strip()[0])
-                    line[c] = line[c][0:i] + return_type + line[c][i::]
+                    return_type = 'void ' if '{' in self.line[c + 1] else ''
+                    i = self.line[c].find(self.line[c].strip()[0])
+                    self.line[c] = self.line[c][0:i] + return_type + self.line[c][i::]
                 elif lstrip.startswith('if__name__=='):
-                    line[c] = 'int main()'
+                    self.line[c] = 'int main()'
                 elif lstrip.startswith('print('):
-                    libs_to_add.add('iostream')
-                    i = line[c].find('print(') + 6
-                    i2 = line[c].find(')', i)
-                    args = line[c][i:i2].replace(',', '<< " " << ')
-                    line[c] = line[c][0:i] + args + line[c][i2::]
-                    line[c] = line[c].replace('print(', 'std::cout << ')
-                    line[c] = line[c][0:line[c].rfind(')')] + " << std::endl;"
-                elif line[c].strip().endswith(']') and not cls.between(line[c], ':', '[', ']') \
-                        and line[c][line[c].find('[') + 1:line[c].find(']')] in ('str', 'int', 'float'):
-                    libs_to_add.add('vector')
-                    typ = line[c][line[c].find('[') + 1:line[c].find(']')]
+                    self.libs_to_add.add('iostream')
+                    i = self.line[c].find('print(') + 6
+                    i2 = self.line[c].find(')', i)
+                    args = self.line[c][i:i2].replace(',', '<< " " << ')
+                    self.line[c] = self.line[c][0:i] + args + self.line[c][i2::]
+                    self.line[c] = self.line[c].replace('print(', 'std::cout << ')
+                    self.line[c] = self.line[c][0:self.line[c].rfind(')')] + " << std::endl;"
+                elif self.line[c].strip().endswith(']') and not self.between(self.line[c], ':', '[', ']') \
+                        and self.line[c][self.line[c].find('[') + 1:self.line[c].find(']')] in ('str', 'int', 'float'):
+                    self.libs_to_add.add('vector')
+                    typ = self.line[c][self.line[c].find('[') + 1:self.line[c].find(']')]
                     if typ == 'str' or typ == 'string':
-                        libs_to_add.add('string')
-                    line[c] = line[c][0:line[c].find('[') + 1] + line[c][line[c].find(']')::]
-                    line[c] = line[c].replace('[]', 'std::vector<{}>()'.format(typ))
-                    if '=' in line[c] and not 'this->' in line[c] and ')' in line[c]:
-                        line[c] = ' ' * cls.get_num_indent(line[c]) + 'auto ' + line[c].lstrip()
+                        self.libs_to_add.add('string')
+                    self.line[c] = self.line[c][0:self.line[c].find('[') + 1] + self.line[c][self.line[c].find(']')::]
+                    self.line[c] = self.line[c].replace('[]', 'std::vector<{}>()'.format(typ))
+                    if '=' in self.line[c] and not 'this->' in self.line[c] and ')' in self.line[c]:
+                        self.line[c] = ' ' * self.get_num_indent(self.line[c]) + 'auto ' + self.line[c].lstrip()
                 elif lstrip.startswith('for') and 'range' in lstrip:
-                    i = line[c].find(' in ') + 4
-                    var = line[c][line[c].find('for') + 3:i - 4].replace('(', '').strip()
-                    rnge = line[c][i:line[c].find(':')]
+                    i = self.line[c].find(' in ') + 4
+                    var = self.line[c][self.line[c].find('for') + 3:i - 4].replace('(', '').strip()
+                    rnge = self.line[c][i:self.line[c].find(':')]
                     rnge = [x.strip() for x in rnge[rnge.find('(') + 1:rnge.find(')')].split(',')]
                     if len(rnge) == 2:
                         op = '++' if rnge[0] < rnge[1] else '--'
-                        line[c] = line[c][0:line[c].find('f')] + \
+                        self.line[c] = self.line[c][0:self.line[c].find('f')] + \
                             'for(auto {} = {}; {} != {}; {}{})'.format(var, rnge[0], var, rnge[1], op, var)
                     elif len(rnge) == 3:
-                        line[c] = line[c][0:line[c].find('f')] + \
+                        self.line[c] = self.line[c][0:self.line[c].find('f')] + \
                                   'for(auto {} = {}; {} != {}; {} += {})'.format(var, rnge[0], var, rnge[1], var, rnge[2])
                 elif lstrip.startswith('for'):
-                    i = line[c].find(':')
-                    i2 = line[c].rfind(' ', 0)
-                    obj = line[c][i2:i].replace(':', '').strip()
+                    i = self.line[c].find(':')
+                    i2 = self.line[c].rfind(' ', 0)
+                    obj = self.line[c][i2:i].replace(':', '').strip()
                     forlp = 'for(auto it = {}.begin(); it != {}.end(); ++it)'.format(obj, obj)
-                    var_name = line[c].strip()
+                    var_name = self.line[c].strip()
                     var_name = var_name[var_name.find(' ') + 1::]
                     var_name = var_name[0:var_name.find(' ')]
                     auto_line = 'auto {} = *it;'.format(var_name)
-                    line[c] = line[c][0:line[c].find('f')] + forlp
-                    line[c + 1] = line[c + 1] + '\n    ' + line[c + 1].replace('{', auto_line)
-                elif lstrip.startswith('if') and line[c].strip().endswith(':'):
-                    i = line[c].find('if') + 2
-                    line[c] = line[c][0:i] + '(' + line[c][i + 1:-1] + ')'
-                elif 'open(' in line[c]:
-                    indent = ' ' * cls.get_num_indent(line[c])
-                    ifstream = 'f{}'.format(cls.get_time())
-                    i = line[c].find('open(') + 5
-                    i2 = line[c].find(',', i)
-                    fn = line[c][i:i2]
-                    var_name = line[c][0:line[c].find('=')].strip()
-                    ftype = line[c][i2 + 1:line[c].find(')', i2)].strip()[1:-1]
+                    self.line[c] = self.line[c][0:self.line[c].find('f')] + forlp
+                    self.line[c + 1] = self.line[c + 1] + '\n    ' + self.line[c + 1].replace('{', auto_line)
+                elif lstrip.startswith('if') and self.line[c].strip().endswith(':'):
+                    i = self.line[c].find('if') + 2
+                    self.line[c] = self.line[c][0:i] + '(' + self.line[c][i + 1:-1] + ')'
+                elif 'open(' in self.line[c]:
+                    indent = ' ' * self.get_num_indent(self.line[c])
+                    ifstream = 'f{}'.format(self.get_time())
+                    i = self.line[c].find('open(') + 5
+                    i2 = self.line[c].find(',', i)
+                    fn = self.line[c][i:i2]
+                    var_name = self.line[c][0:self.line[c].find('=')].strip()
+                    ftype = self.line[c][i2 + 1:self.line[c].find(')', i2)].strip()[1:-1]
                     if ftype == 'r':
-                        libs_to_add.add('string')
-                        libs_to_add.add('fstream')
-                        libs_to_add.add('iostream')
-                        libs_to_add.add('vector')
-                        indent = ' ' * cls.get_num_indent(line[c])
+                        self.libs_to_add.add('string')
+                        self.libs_to_add.add('fstream')
+                        self.libs_to_add.add('iostream')
+                        self.libs_to_add.add('vector')
+                        indent = ' ' * self.get_num_indent(self.line[c])
                         line2 = indent + 'std::ifstream file({});\n'.format(fn)
                         line2 += indent + 'std::vector<std::string> {};\n'.format(var_name)
                         line2 += indent + 'if(file.is_open()){\n'
                         line2 += indent + '    std::string line;\n'
                         line2 += indent + '    while (getline(file, line)) {\n'
-                        line2 += indent + '        {}.push_back(line);\n'.format(var_name)
+                        line2 += indent + '        {}.push_back(self.line);\n'.format(var_name)
                         line2 += indent + '    }; file.close();\n'
                         line2 += indent + '}'
-                        line[c] = line2
+                        self.line[c] = line2
                     elif ftype == 'w':
-                        libs_to_add.add('fstream')
-                        indent = ' ' * cls.get_num_indent(line[c])
-                        line[c] = indent + 'std::ofstream {}({});'.format(var_name, fn)
-                        write_files.append(var_name)
-                elif '.write(' in line[c]:
-                    string_to_write = line[c][line[c].find('.write(') + 7:-1]
-                    for var_wf in write_files:
-                        if var_wf + '.write(' in line[c]:
-                            indent = ' ' * cls.get_num_indent(line[c])
-                            line[c] = indent + '{} << {};\n'.format(var_wf, string_to_write)
-                            line[c] += indent + '{}.close();\n'.format(var_wf)
-                elif 'while' in line[c]:
-                    i = line[c].find('while') + 5
-                    line[c] = line[c][0:i] + '(' + line[c][i::].strip()[0:-1] + ')'
-                elif Transpile.between(line[c], ':', '[', ']'):
-                    var_name = line[c].strip().replace('auto ', '')
+                        self.libs_to_add.add('fstream')
+                        indent = ' ' * self.get_num_indent(self.line[c])
+                        self.line[c] = indent + 'std::ofstream {}({});'.format(var_name, fn)
+                        self.write_files.append(var_name)
+                elif '.write(' in self.line[c]:
+                    string_to_write = self.line[c][self.line[c].find('.write(') + 7:-1]
+                    for var_wf in self.write_files:
+                        if var_wf + '.write(' in self.line[c]:
+                            indent = ' ' * self.get_num_indent(self.line[c])
+                            self.line[c] = indent + '{} << {};\n'.format(var_wf, string_to_write)
+                            self.line[c] += indent + '{}.close();\n'.format(var_wf)
+                elif 'while' in self.line[c]:
+                    i = self.line[c].find('while') + 5
+                    self.line[c] = self.line[c][0:i] + '(' + self.line[c][i::].strip()[0:-1] + ')'
+                elif self.between(self.line[c], ':', '[', ']'):
+                    var_name = self.line[c].strip().replace('auto ', '')
                     var_name = var_name[0:var_name.find(' ')]  # .replace('X', 'auto ')
-                    a = line[c][line[c].find('[') + 1:line[c].find(':')]
-                    b = line[c][line[c].find(':') + 1:line[c].find(']')]
-                    vector_or_string = line[c][line[c].find('=') + 1:line[c].find('[')].strip()
-                    indent = ' ' * Transpile.get_num_indent(line[c])
+                    a = self.line[c][self.line[c].find('[') + 1:self.line[c].find(':')]
+                    b = self.line[c][self.line[c].find(':') + 1:self.line[c].find(']')]
+                    vector_or_string = self.line[c][self.line[c].find('=') + 1:self.line[c].find('[')].strip()
+                    indent = ' ' * self.get_num_indent(self.line[c])
 
                     c2 = c - 1
-                    while not cls.found_type(line, c2, vector_or_string):
+                    while not self.found_type(c2, vector_or_string):
                         c2 -= 1
-                    line_type = Transpile.get_assign_type(line[c2])
+                    line_type = self.get_assign_type(self.line[c2])
 
                     if line_type == 'std::string':
-                        libs_to_add.add('string')
+                        self.libs_to_add.add('string')
                         line_type = 'char'
                         vector = 'auto {} = {}.substr({}, {});'
                         line2 = indent + vector.format(var_name, vector_or_string, a, b)
                     else:
-                        libs_to_add.add('vector')
+                        self.libs_to_add.add('vector')
                         vector = 'std::vector<{}> {}({}.begin() + {}, {}.begin() + {});'
                         line2 = indent + vector.format(
                             line_type, var_name, vector_or_string, a, vector_or_string, b)
-                    line[c] = line2
-                elif 'find(' in line[c]:
-                    var_name = line[c].strip().replace('auto ', '')
+                    self.line[c] = line2
+                elif 'find(' in self.line[c]:
+                    var_name = self.line[c].strip().replace('auto ', '')
                     var_name = var_name[0:var_name.find(' ')]  # .replace('X', 'auto ')
-                    vector_or_string = line[c][line[c].find('=') + 1:line[c].find('.find(')].strip()
-                    i = line[c].find('.find(') + 6
-                    string_find = line[c][i:line[c].find(')', i)].replace('"', "'")
+                    vector_or_string = self.line[c][self.line[c].find('=') + 1:self.line[c].find('.find(')].strip()
+                    i = self.line[c].find('.find(') + 6
+                    string_find = self.line[c][i:self.line[c].find(')', i)].replace('"', "'")
                     string_find = string_find.replace("'", '"')
-                    indent = ' ' * Transpile.get_num_indent(line[c])
+                    indent = ' ' * self.get_num_indent(self.line[c])
 
                     c2 = c - 1
-                    while not cls.found_type(line, c2, vector_or_string):
+                    while not self.found_type(c2, vector_or_string):
                         c2 -= 1
 
-                    line_type = Transpile.get_assign_type(line[c2])
+                    line_type = self.get_assign_type(self.line[c2])
 
                     if line_type == 'std::string':
-                        libs_to_add.add('string')
+                        self.libs_to_add.add('string')
                         find_str = 'int {} = {}.find({});'
                         line2 = indent + find_str.format(var_name, vector_or_string, string_find)
                     else:
-                        libs_to_add.add('algorithm')
+                        self.libs_to_add.add('algorithm')
                         find_str = 'int {} = std::find({}.begin(), {}.end(), {}) - {}.begin();'
                         line2 = indent + find_str.format(
                             var_name, vector_or_string, vector_or_string, string_find, vector_or_string)
-                    line[c] = line2
-                elif '.join(' in line[c]:
-                    libs_to_add.add('iterator')
-                    libs_to_add.add('sstream')
-                    libs_to_add.add('string')
-                    indent = ' ' * cls.get_num_indent(line[c])
-                    line[c] = line[c].replace("'", '"')
-                    i = line[c].find('"')
-                    i2 = line[c].find('"', i + 1) + 1
-                    i3 = line[c].find('.join(') + 6
-                    i4 = line[c].find(')', i3)
-                    separator = line[c][i:i2]
-                    vector = line[c][i3:i4]
-                    var_name = line[c][0:line[c].find('=')].strip()
-                    ostringstream = 'os{}'.format(cls.get_time())
+                    self.line[c] = line2
+                elif '.join(' in self.line[c]:
+                    self.libs_to_add.add('iterator')
+                    self.libs_to_add.add('sstream')
+                    self.libs_to_add.add('string')
+                    indent = ' ' * self.get_num_indent(self.line[c])
+                    self.line[c] = self.line[c].replace("'", '"')
+                    i = self.line[c].find('"')
+                    i2 = self.line[c].find('"', i + 1) + 1
+                    i3 = self.line[c].find('.join(') + 6
+                    i4 = self.line[c].find(')', i3)
+                    separator = self.line[c][i:i2]
+                    vector = self.line[c][i3:i4]
+                    var_name = self.line[c][0:self.line[c].find('=')].strip()
+                    ostringstream = 'os{}'.format(self.get_time())
                     line2 = indent + 'std::ostringstream {};\n'.format(ostringstream)
                     copy_string = indent + 'std::copy({}.begin(), {}.end() - 1, \n' + \
                                   '              std::ostream_iterator<decltype({}[0])>({}, {}));\n'
                     line2 += copy_string.format(vector, vector, vector, ostringstream, separator)
                     line2 += indent + '{} << *({}).rbegin();\n'.format(ostringstream, vector)
                     line2 += indent + 'std::string {} = {}.str();\n'.format(var_name, ostringstream)
-                    line[c] = line2
+                    self.line[c] = line2
                 # bottom of elif
-                elif '=' in line[c] and not 'this->' in line[c] and not 'self.' in line[c] \
-                        and not 'auto' in line[c]:
+                elif '=' in self.line[c] and not 'this->' in self.line[c] and not 'self.' in self.line[c] \
+                        and not 'auto' in self.line[c]:
                     found_class = False
-                    for clas in class_name:
-                        if clas in line[c]:
+                    for clas in self.class_name:
+                        if clas in self.line[c]:
                             found_class = True
                     if not found_class:
-                        line[c] = line[c] + ' POSSIBLE LOCAL DECLARATION'
+                        self.line[c] = self.line[c] + ' POSSIBLE LOCAL DECLARATION'
 
-                if in_class[0]:
-                    if not entered_constructor:
-                        if line[c] and not 'class' in line[c] and not '{' in line[c] and '=' in line[c]:
-                            var = line[c].strip()
+                if self.in_class[0]:
+                    if not self.entered_constructor:
+                        if self.line[c] and not 'class' in self.line[c] and not '{' in self.line[c] and '=' in self.line[c]:
+                            var = self.line[c].strip()
                             var = var.replace('auto ', '')
                             var = var[0:var.find(' ')]
-                            assignment = line[c][line[c].find('=') + 1::].strip()
-                            line[c] = ''
-                            for clas in class_name:
+                            assignment = self.line[c][self.line[c].find('=') + 1::].strip()
+                            self.line[c] = ''
+                            for clas in self.class_name:
                                 if assignment.startswith('{}('.format(clas)):
                                     assignment = clas
-                            private_members.append(('static ' + var, assignment))
-                    if '{' in line[c] and not in_class_done:
-                        line[c] += '\n' + ' ' * cls.get_num_indent(line[c]) + '    public:'
-                        in_class_done = True
-                    elif '}' in line[c]:
-                        if Transpile.get_num_indent(line[c]) == in_class[1]:
-                            in_class[0] = False
-                            # static_members = []
-                            line[c] += ';'
-                            if private_members:
+                            self.private_members.append(('static ' + var, assignment))
+                    if '{' in self.line[c] and not self.in_class_done:
+                        self.line[c] += '\n' + ' ' * self.get_num_indent(self.line[c]) + '    public:'
+                        self.in_class_done = True
+                    elif '}' in self.line[c]:
+                        if self.get_num_indent(self.line[c]) == self.in_class[1]:
+                            self.in_class[0] = False
+                            # self.static_members = []
+                            self.line[c] += ';'
+                            if self.private_members:
                                 pvt = '\n'
-                                for mbr in private_members:
-                                    if mbr[1] not in class_name and 'vector' not in mbr[1]:
-                                        typ, libs_to_add = Transpile.get_type(mbr[1], libs_to_add, class_name)
+                                for mbr in self.private_members:
+                                    if mbr[1] not in self.class_name and 'vector' not in mbr[1]:
+                                        typ, self.libs_to_add = self.get_type(mbr[1])
                                     else:
                                         typ = mbr[1].replace('<str>', '<string>')
                                         typ = typ.replace('<string>', '<std::string>')
                                         if 'string' in typ:
-                                            libs_to_add.add('string')
+                                            self.libs_to_add.add('string')
                                     if 'static' in mbr[0]:
                                         typ = 'static ' + typ.replace('()', '')
                                         pvt += '    {} {};\n'.format(typ, mbr[0].replace('static ', ''))
                                         static_mem = typ.replace('static ', '')
-                                        static_mem += ' {}::{}'.format(class_name[-1], mbr[0].replace('static ', ''))
-                                        static_mem += ' = {}'.format(cls.get_default_initializer(typ.replace('static ', '')))
-                                        static_members.append(static_mem)
+                                        static_mem += ' {}::{}'.format(self.class_name[-1], mbr[0].replace('static ', ''))
+                                        static_mem += ' = {}'.format(self.get_default_initializer(typ.replace('static ', '')))
+                                        self.static_members.append(static_mem)
                                     else:
                                         pvt += '    {} {};\n'.format(typ,  mbr[0]);
-                                line[c] = pvt + line[c]
-                            private_members = []
-                line = cls.add_semicolon(line, c)
-                line = cls.instantiation(line, c, class_name, entered_constructor)
+                                self.line[c] = pvt + self.line[c]
+                            self.private_members = []
+                self.line = self.add_semicolon(c)
+                self.line = self.instantiation(c)
 
-        line.insert(0, '\n')
-        for lib in libs_to_add:
-            line.insert(0, '#include<{}>'.format(lib))
+        self.line.insert(0, '\n')
+        for lib in self.libs_to_add:
+            self.line.insert(0, '#include<{}>'.format(lib))
 
         # O(N) loops
-        line = cls.get_replacements(line)
-        line = cls.add_static_member_initializers(line, static_members)
-        line = cls.add_auto_for_local_vars(line, class_name, private_members, static_members)
-        line = cls.convert_char_to_string(line)
-        line = cls.convert_len_to_size(line)
+        self.line = self.get_replacements()
+        self.line = self.add_static_member_initializers()
+        self.line = self.add_auto_for_local_vars()
+        self.line = self.convert_char_to_string()
+        self.line = self.convert_len_to_size()
 
-        cpp = '\n'.join(filter(None, line))
-        return cpp
-
-    @staticmethod
-    def convert_len_to_size(line):
-        for c in range(0, len(line)):
-            if 'len(' in line[c]:
-                i = line[c].find('len(')
-                i2 = line[c].find(')', i) + 1
-                line2 = line[c][0:i] + line[c][i:i2].replace('len', '') + '.size()' + line[c][i2::]
+        self.cpp = '\n'.join(filter(None, self.line))
+        # return self.cpp
+    
+    # def line_class(self):
+        
+    def convert_len_to_size(self):
+        for c in range(0, len(self.line)):
+            if 'len(' in self.line[c]:
+                i = self.line[c].find('len(')
+                i2 = self.line[c].find(')', i) + 1
+                line2 = self.line[c][0:i] + self.line[c][i:i2].replace('len', '') + '.size()' + self.line[c][i2::]
                 line2 = line2.replace('len(', '(')
-                line[c] = line2
-        return line
+                self.line[c] = line2
+        return self.line
 
-    @staticmethod
-    def convert_char_to_string(line):
-        for c in range(0, len(line)):
-            if Transpile.get_assign_type(line[c]) == 'std::string' \
-                    and 'vector' not in line[c] and 'this->' not in line[c] and '.substr(' not in line[c]\
-                    and (line[c].find('.') == -1 or not line[c].find('.') < line[c].find('=')):
-                i = line[c].find('"')
-                i2 = line[c].find('"', i + 1)
-                line[c] = line[c][0:i] + '("' + line[c][i + 1:i2] + '");'
-                line[c] = line[c].replace(' = ', '').replace('=', '').replace(' =', '').replace('= ', '')
-                line[c] = line[c].replace('auto ', 'std::string ')
-        return line
+    def convert_char_to_string(self):
+        for c in range(0, len(self.line)):
+            if self.get_assign_type(self.line[c]) == 'std::string' \
+                    and 'vector' not in self.line[c] and 'this->' not in self.line[c] and '.substr(' not in self.line[c]\
+                    and (self.line[c].find('.') == -1 or not self.line[c].find('.') < self.line[c].find('=')):
+                i = self.line[c].find('"')
+                i2 = self.line[c].find('"', i + 1)
+                self.line[c] = self.line[c][0:i] + '("' + self.line[c][i + 1:i2] + '");'
+                self.line[c] = self.line[c].replace(' = ', '').replace('=', '').replace(' =', '').replace('= ', '')
+                self.line[c] = self.line[c].replace('auto ', 'std::string ')
+        return self.line
 
-    @staticmethod
-    def add_auto_for_local_vars(line, class_name, private_members, static_members):
+    def add_auto_for_local_vars(self):
         flag = ' POSSIBLE LOCAL DECLARATION'
         local_vars = []
         closing_braces = []  # what indents of scope are open
-        for c in range(0, len(line)):
-            if '{' in line[c]:
-                indent = Transpile.get_num_indent(line[c])
+        for c in range(0, len(self.line)):
+            if '{' in self.line[c]:
+                indent = self.get_num_indent(self.line[c])
                 closing_braces.append(indent)
-            elif '}' in line[c]:
+            elif '}' in self.line[c]:
                 _ = closing_braces.pop()
                 if local_vars:
                     local_vars2 = []
@@ -323,45 +324,40 @@ class Transpile:
                             local_vars2.append(local_vars[i])
                     local_vars = local_vars2
 
-            if flag in line[c]:
+            if flag in self.line[c]:
                 static_mem_found = False
-                for static_mem in static_members:
+                for static_mem in self.static_members:
                     i = static_mem.find('::') + 2
                     static_mem = static_mem[i:static_mem.find(' ', i)]
-                    if static_mem in line[c]:
+                    if static_mem in self.line[c]:
                         static_mem_found = True
                 if not static_mem_found:
                     local_var_found = False
                     for local_var in local_vars:
                         indent = local_var[0]
                         local_var = local_var[1]
-                        if indent <= Transpile.get_num_indent(line[c]):
-                            if line[c].strip().startswith(local_var + ' =') \
-                                    or line[c].strip().startswith(local_var + '=') \
-                                    or line[c].strip().startswith(local_var + ' -=')\
-                                    or line[c].strip().startswith(local_var + ' +='):
+                        if indent <= self.get_num_indent(self.line[c]):
+                            if self.line[c].strip().startswith(local_var + ' =') \
+                                    or self.line[c].strip().startswith(local_var + '=') \
+                                    or self.line[c].strip().startswith(local_var + ' -=')\
+                                    or self.line[c].strip().startswith(local_var + ' +='):
                                 local_var_found = True
                     if not local_var_found:
-                        if line[c].find('.') == -1 or not line[c].find('.') < line[c].find('='):
-                            line[c] = ' ' * Transpile.get_num_indent(line[c]) + 'auto ' + line[c].lstrip()
-                            local_vars.append((Transpile.get_num_indent(line[c]),
-                                               line[c][0:line[c].find('=')]
+                        if self.line[c].find('.') == -1 or not self.line[c].find('.') < self.line[c].find('='):
+                            self.line[c] = ' ' * self.get_num_indent(self.line[c]) + 'auto ' + self.line[c].lstrip()
+                            local_vars.append((self.get_num_indent(self.line[c]),
+                                               self.line[c][0:self.line[c].find('=')]
                                                .replace('auto ', '').replace('-', '').strip()))
-                    elif 'i4' in line[c]:
-                        st()
-                line[c] = line[c].replace(flag, '')
+                self.line[c] = self.line[c].replace(flag, '')
+        return self.line
 
-        return line
+    def add_static_member_initializers(self):
+        for c in range(0, len(self.line)):
+            if 'main' in self.line[c]:
+                self.line[c] = '{};\n'.format(';\n'.join([x for x in self.static_members])) + self.line[c]
+        return self.line
 
-    @staticmethod
-    def add_static_member_initializers(line, static_members):
-        for c in range(0, len(line)):
-            if 'main' in line[c]:
-                line[c] = '{};\n'.format(';\n'.join([x for x in static_members])) + line[c]
-        return line
-
-    @staticmethod
-    def get_default_initializer(typ):
+    def get_default_initializer(self, typ):
         if typ == 'int':
             return 0
         elif typ == 'float':
@@ -373,133 +369,124 @@ class Transpile:
         else:
             return typ + '()'
 
-    @staticmethod
-    def get_replacements(line):
-        for c in range(0, len(line)):
-            if '#' not in line[c] and '#' not in line[c]:
-                line[c] = line[c] \
+    def get_replacements(self):
+        for c in range(0, len(self.line)):
+            if '#' not in self.line[c] and '#' not in self.line[c]:
+                self.line[c] = self.line[c] \
                     .replace('self.', 'this->').replace('>()];', '>();') \
                     .replace('append', 'push_back').replace('pass', ';') \
                     .replace('" +', '" <<').replace('"+', ' << ').replace('+"', ' << "').replace('+ "', '<< "') \
                     .replace(';;;', ';').replace(';;', ';').replace('"<<', '" <<').replace('<<"', '<< "') \
                     .replace('vector<str>', 'vector<std::string>')\
                     .replace(' str(', ' std::to_string(').replace('(str(', '(std::to_string(')
-                if 'std::cout <<' in line[c]:
-                    line[c] = line[c]\
+                if 'std::cout <<' in self.line[c]:
+                    self.line[c] = self.line[c]\
                         .replace(', "', '<< "').replace('",', '" <<').replace(", '", "<< '").replace("' ,", "' <<")
             else:
-                if '#include' not in line[c]:
-                    line[c] = line[c].replace('#', '//')
-            if 'std::find(' not in line[c]:
-                line[c] = line[c].replace("'", '"')
-        return line
+                if '#include' not in self.line[c]:
+                    self.line[c] = self.line[c].replace('#', '//')
+            if 'std::find(' not in self.line[c]:
+                self.line[c] = self.line[c].replace("'", '"')
+        return self.line
 
-    @staticmethod
-    def get_indented(line):
+    def get_indented(self):
         indent_stack = []
-        line.append('END')
-        for c in range(0, len(line)):
-            line[c] = line[c].rstrip()
-            if line[c].strip() == '':
-                line[c] = ''
+        self.line.append('END')
+        for c in range(0, len(self.line)):
+            self.line[c] = self.line[c].rstrip()
+            if self.line[c].strip() == '':
+                self.line[c] = ''
             else:
-                indent = Transpile.get_num_indent(line[c])
+                indent = self.get_num_indent(self.line[c])
                 if indent and (not indent_stack or indent > indent_stack[-1]):
                     indent_stack.append(indent)
-                    line[c] = (indent_stack[-1] - 4) * ' ' + '{\n' + line[c]
+                    self.line[c] = (indent_stack[-1] - 4) * ' ' + '{\n' + self.line[c]
                 elif indent_stack and indent < indent_stack[-1]:
                     while indent_stack and indent < indent_stack[-1]:
-                        line[c - 1] += '\n' + (indent_stack[-1] - 4) * ' ' + '}'
+                        self.line[c - 1] += '\n' + (indent_stack[-1] - 4) * ' ' + '}'
                         del indent_stack[-1]
-        line[-1] = line[-1].replace('END', '')
-        line = '\n'.join(line).split('\n')
-        return line
+        self.line[-1] = self.line[-1].replace('END', '')
+        line = '\n'.join(self.line).split('\n')
+        return self.line
 
-    @staticmethod
-    def add_semicolon(line, c):
-        not_in = lambda x: x not in line[c]
+    def add_semicolon(self, c):
+        not_in = lambda x: x not in self.line[c]
         yes_in = lambda x: not not_in(x)
-        if line[c] and not_in('//') and not_in('if') and not_in('for') and not_in('class') and not_in('main'):
+        if self.line[c] and not_in('//') and not_in('if') and not_in('for') and not_in('class') and not_in('main'):
             if yes_in('=') or (not_in(';') and not_in('void')):
-                if not ('{' in line[c] or '}' in line[c] and not_in('def') and not_in('class')):
+                if not ('{' in self.line[c] or '}' in self.line[c] and not_in('def') and not_in('class')):
                     if not_in('while('):
-                        line[c] += ';'
-        return line
+                        self.line[c] += ';'
+        return self.line
 
-
-    @staticmethod
-    def instantiation(line, c, class_name, entered_constructor):
-        if entered_constructor:
-            for clas in class_name:
-                if clas in line[c] and '=' in line[c]:
-                    if line[c].strip().endswith(']'):
-                        i = len(line[c]) - len(line[c].lstrip())
-                        vector = line[c].lstrip()
+    def instantiation(self, c):
+        if self.entered_constructor:
+            for clas in self.class_name:
+                if clas in self.line[c] and '=' in self.line[c]:
+                    if self.line[c].strip().endswith(']'):
+                        i = len(self.line[c]) - len(self.line[c].lstrip())
+                        vector = self.line[c].lstrip()
                         var_name = vector[0:vector.find(' ')]
                         vector = vector[vector.find('[') + 1:vector.find(']')]
                         vector = 'vector<{}>();'.format(vector)
-                        spacer = ' ' * Transpile.get_num_indent(line[c])
-                        line[c] = '{}{} = {}'.format(spacer, var_name, vector)
+                        spacer = ' ' * self.get_num_indent(self.line[c])
+                        self.line[c] = '{}{} = {}'.format(spacer, var_name, vector)
                     else:
-                        i = Transpile.get_num_indent(line[c])
-                        stack_init = line[c].lstrip()
+                        i = self.get_num_indent(self.line[c])
+                        stack_init = self.line[c].lstrip()
                         var_name = stack_init[0:stack_init.find(' ')]
                         args = stack_init[stack_init.find('('):stack_init.find(')') + 1].strip()
                         try:
                             args = '' if args.strip()[1] == ')' else args
-                            if 'this->' in line[c]:
+                            if 'this->' in self.line[c]:
                                 raise TypeError('')
-                            line[c] = i * ' ' + clas + ' ' + var_name + args + ';'
+                            self.line[c] = i * ' ' + clas + ' ' + var_name + args + ';'
                         except IndexError:
-                            line[c] = i * ' ' + var_name + ' = ' + 'std::vector<{}>();'.format(clas)
+                            self.line[c] = i * ' ' + var_name + ' = ' + 'std::vector<{}>();'.format(clas)
                         except:
                             pass
-            return line
+            return self.line
         else:
-            return line
+            return self.line
 
-    @staticmethod
-    def get_num_indent(line):
+    def get_num_indent(self, line_c):
         for i in range(4 * 8, -1, -4):
             indent = ' ' * i
-            if line.startswith(indent):
+            if line_c.startswith(indent):
                 return i
         return 0  # no indent
 
-    @staticmethod
-    def get_args(line, c):
+    def get_args(self, c):
         return [x.strip() for x in
-                line[c].strip()[line[c].strip().find(','):-1][0:-1].split(',')[1::]]
+                self.line[c].strip()[self.line[c].strip().find(','):-1][0:-1].split(',')[1::]]
 
-    @staticmethod
-    def get_type(x, libs_to_add=set(), class_name=['']):
+    def get_type(self, x):
         if x.strip()[0] == '[' and x.strip()[-1] == ']':
-            libs_to_add.add('vector')
+            self.libs_to_add.add('vector')
             typ = x[x.find('[') + 1:x.find(']')].strip()
-            return ['std::vector<{}>'.format(typ), libs_to_add]
+            return ['std::vector<{}>'.format(typ), self.libs_to_add]
         try:
             int(x)
             if '.' in x:
-                return ['float', libs_to_add]
+                return ['float', self.libs_to_add]
             else:
-                return ['int', libs_to_add]
+                return ['int', self.libs_to_add]
         except ValueError:
-            for clas in class_name[1::]:
+            for clas in self.class_name[1::]:
                 if clas + '(' in x:
-                    return [clas, libs_to_add]
+                    return [clas, self.libs_to_add]
             if '""' in x or "''" in x:
-                libs_to_add.add('string')
-                return ['std::string', libs_to_add]
-            for clas in class_name:
+                self.libs_to_add.add('string')
+                return ['std::string', self.libs_to_add]
+            for clas in self.class_name:
                 if clas in x:
-                    return [clas, libs_to_add]
-            return ['float', libs_to_add]
+                    return [clas, self.libs_to_add]
+            return ['float', self.libs_to_add]
         except Exception:
-            libs_to_add.add('string')
-            return ['std::string', libs_to_add]
+            self.libs_to_add.add('string')
+            return ['std::string', self.libs_to_add]
 
-    @staticmethod
-    def between(s, btw, a, b):
+    def between(self, s, btw, a, b):
         """ return True if btw between a and b """
         s = s.replace('::', '')  # ignore std::, etc.
         ai = s.rfind(a)
@@ -507,8 +494,7 @@ class Transpile:
         btwi = s.rfind(btw)
         return True if btwi < bi and btwi > ai else False
 
-    @staticmethod
-    def get_assign_type(line_c):
+    def get_assign_type(self, line_c):
         if '.substr(' in line_c:
             return 'std::string'
         line_c = line_c[line_c.find('=') + 1:line_c.find(';')].strip()
@@ -524,16 +510,14 @@ class Transpile:
         else:
             return 'int'
 
-    @staticmethod
-    def get_time():
+    def get_time(self):
         return str(int(1000 * time()))
 
-    @staticmethod
-    def found_type(line, c2, vector_or_string):
+    def found_type(self, c2, vector_or_string):
         return c2 < 0 or \
-               ((vector_or_string + '=' in line[c2] or vector_or_string + ' =' in line[c2]
-                 or ' ' + vector_or_string + '(' in line[c2])
-                and 'cout' not in line[c2] and '.find' not in line[c2]
-                and '.append' not in line[c2] and '.size' not in line[c2]
-                and 'len(' not in line[c2] and '#' not in line[c2]
-                and vector_or_string + '[' not in line[c2][line[c2].find('=')::])
+               ((vector_or_string + '=' in self.line[c2] or vector_or_string + ' =' in self.line[c2]
+                 or ' ' + vector_or_string + '(' in self.line[c2])
+                and 'cout' not in self.line[c2] and '.find' not in self.line[c2]
+                and '.append' not in self.line[c2] and '.size' not in self.line[c2]
+                and 'len(' not in self.line[c2] and '#' not in self.line[c2]
+                and vector_or_string + '[' not in self.line[c2][self.line[c2].find('=')::])
