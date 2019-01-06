@@ -42,7 +42,7 @@ class Transpile:
                     c += 2
                     c2 = c
                     while '}' not in line[c2] and c2 < len(line):
-                        if 'self.' in line[c2]:
+                        if 'self.' in line[c2] and not line[c2].strip().endswith(')'):
                             line[c2] = line[c2].replace('self.', 'this->')
                             i = line[c2].find('->') + 2
                             i2 = line[c2].find('=') + 1

@@ -60,12 +60,7 @@ reading and writing files:
 `./lessons/lesson7`
 
 ## Tips
-PyCpp is easier if you understand two things:
-1. declare variables as often as possible
-2. name variables descriptively and use class members/functions for scope to avoid name conflicts
-
-(2) will help with (1), which is a limitation of PyCpp.
-Note: Declaring a variable, underneath, may leverage 
-C++11/14 "auto" to compile while deducing type, and 
-declaring a variable also defines the type of a list
-or class, for example.   
+PyCpp works best when:
+1) declaring new, descriptively named, variables 
+as often as possible
+2) putting all operations in class functions

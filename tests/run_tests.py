@@ -19,6 +19,9 @@ class X:
 
     def junk(self):
         a = [int]
+        b = [str]
+        c = [float]
+        s = ''
 
 class Test:
 
@@ -39,6 +42,8 @@ class Test:
         self.run_substring_test()
         self.run_find_type_test()
         self.run_join_write_test()
+        self.run_join_int_test()
+        self.run_build_str_test()
 
     def run_obj_range_iter_test(self):
         x1 = X(1, 2.0)
@@ -82,7 +87,7 @@ class Test:
         b3 = b2[1:i0]
         print(b2[0], '= 1')
         print(b3[0], '= 2')
-        print(len(b2), '= 3')
+        print(len(b2), ' = 3')
 
         a3 = [float]
         a3.append(0)
@@ -91,7 +96,7 @@ class Test:
         a3.append(3)
         a4 = a3[0:1]
         i4 = len(a4)
-        print(a4[i4], '= 0')
+        print(a4[i4], '= 1')
 
     def run_loop_test(self):
         c4 = 3
@@ -131,12 +136,36 @@ class Test:
 
     def run_join_write_test(self):
         s7 = [str]
-        for i in range(0, 10000000):
+        for i in range(0, 1000000):
             s7.append(str(i))
         s8 = ','.join(s7)
         print('writing file')
         f = open('yourcode/test.txt', 'w')
         f.write(s8)
+
+    def run_join_int_test(self):
+        a = [int]
+        for i in range(0, 1000000):
+            a.append(i)
+        s = '\n'.join(a)
+        f = open('tests/test.txt', 'w')
+        f.write(s)
+
+    def run_build_str_test(self):
+        s = [str]
+        for i in range(0, 10):
+            s.append(str(i))
+        s2 = s[0:5]
+        s3 = s2[0:4]
+        s4 = s3[0:3]
+        s6 = s4
+        s6.append('3')
+        ss = ''
+        ls6 = len(s6)
+        for i in range(0, ls6):
+            ss = ss + s6[i]
+        print(ss, '= 0123')
+
 
 if __name__ == '__main__':
     t = Test()
