@@ -16,6 +16,6 @@ class Cat:
 
 if __name__ == '__main__':
     c1 = Cat('Pursippany')
+    print(c1.name, 'says the number of cats is:', c1.num_cats)
     c2 = Cat('MeowMeow')
-    print(c1.name, ' says the number of cats is: ', c1.num_cats)
-    print(c2.name, ' says the number of cats is: ', c2.num_cats)
+    print(c2.name, 'says the number of cats is:', c2.num_cats)
