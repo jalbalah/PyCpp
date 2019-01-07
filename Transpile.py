@@ -42,12 +42,19 @@ class Transpile:
                     c += 2
                     c2 = c
                     while '}' not in line[c2] and c2 < len(line):
-                        if 'self.' in line[c2] and not ')' in line[c2]:
-                            line[c2] = line[c2].replace('self.', 'this->')
-                            i = line[c2].find('->') + 2
-                            i2 = line[c2].find('=') + 1
-                            private_members.append((line[c2][i:line[c2].find(' ', i)],
-                                                    line[c2][i2::]))
+                        if 'print(' not in line[c2] and '#' not in line[c2] \
+                                and 'self.' in line[c2]:
+                            class_found = False
+                            if '(' in line[c2]:
+                                for clas in class_name:
+                                    if clas + '(' in line[c2]:
+                                        class_found = True
+                            if '(' not in line[c2] or class_found:
+                                line[c2] = line[c2].replace('self.', 'this->')
+                                i = line[c2].find('->') + 2
+                                i2 = line[c2].find('=') + 1
+                                private_members.append((line[c2][i:line[c2].find(' ', i)],
+                                                        line[c2][i2::]))
                         c2 += 1
                 elif lstrip.startswith('def'):
                     args = Transpile.get_args(line, c)

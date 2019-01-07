@@ -1,9 +1,9 @@
-#include<string>
-#include<sstream>
 #include<iostream>
-#include<iterator>
-#include<fstream>
+#include<string>
 #include<vector>
+#include<sstream>
+#include<fstream>
+#include<iterator>
 
 
 // defining a C++ object X
@@ -174,11 +174,11 @@ class Test
         {
             s7.push_back(std::to_string(i));
         }
-        std::ostringstream os1546804014999;
+        std::ostringstream os1546866675032;
         std::copy(s7.begin(), s7.end() - 1, 
-              std::ostream_iterator<decltype(s7[0])>(os1546804014999, ","));
-        os1546804014999 << *(s7).rbegin();
-        std::string s8 = os1546804014999.str();
+              std::ostream_iterator<decltype(s7[0])>(os1546866675032, ","));
+        os1546866675032 << *(s7).rbegin();
+        std::string s8 = os1546866675032.str();
 ;
         std::cout << "writing file" << std::endl;
         std::ofstream f("yourcode/test.txt");
@@ -193,11 +193,11 @@ class Test
         {
             a.push_back(i);
         }
-        std::ostringstream os1546804014999;
+        std::ostringstream os1546866675032;
         std::copy(a.begin(), a.end() - 1, 
-              std::ostream_iterator<decltype(a[0])>(os1546804014999, "\n"));
-        os1546804014999 << *(a).rbegin();
-        std::string s = os1546804014999.str();
+              std::ostream_iterator<decltype(a[0])>(os1546866675032, "\n"));
+        os1546866675032 << *(a).rbegin();
+        std::string s = os1546866675032.str();
 ;
         std::ofstream f("tests/test.txt");
         f << s;
