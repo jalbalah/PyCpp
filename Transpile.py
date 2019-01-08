@@ -1,6 +1,7 @@
 
 from pdb import set_trace as st
 from time import time
+import os
 
 
 class Transpile:
@@ -18,6 +19,7 @@ class Transpile:
         private_members = []
         static_members = []
         write_files = []
+        import_path = []
 
         for c in range(0, len(line)):
             lstrip = line[c].lstrip().replace(' ', '')
@@ -220,6 +222,28 @@ class Transpile:
                     line2 += indent + '{} << *({}).rbegin();\n'.format(ostringstream, vector)
                     line2 += indent + 'std::string {} = {}.str();\n'.format(var_name, ostringstream)
                     line[c] = line2
+                elif 'import *' in line[c] and 'from' in line[c]:
+                    filename = line[c][line[c].find('from') + 5:line[c].find('import')].strip()
+                    found_import = False
+                    for path in import_path:
+                        try:
+                            with open('{}{}{}.py'.format(path, os.sep, filename)) as rf:
+                                line[c] = Transpile(rf.readlines())
+                            found_import = True
+                            break
+                        except FileNotFoundError as e:
+                            print(e)
+                    if not found_import:
+                        err_str = 'Unknown import, "{}", in line {}: "{}". \n'
+                        err_str += '           Are you missing sys.path.append?'
+                        raise Exception(err_str.format(filename, c, line[c]))
+                elif 'import' in line[c]:
+                    line[c] = ''
+                elif 'sys.path.append(' in line[c]:
+                    i = line[c].find('sys.path.append(') + 17
+                    i_path = line[c][i:line[c].find(')', i) - 1]
+                    import_path.append(i_path)
+                    line[c] = ''
                 # bottom of elif
                 elif '=' in line[c] and not 'this->' in line[c] and not 'self.' in line[c] \
                         and not 'auto' in line[c]:

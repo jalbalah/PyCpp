@@ -25,7 +25,7 @@ float Cat::num_cats = 0.0;
 int main()
 {
     Cat c1("Pursippany");
-    std::cout << c1.name<< " " <<  " says the number of cats is: "<< " " <<  c1.num_cats << std::endl;
+    std::cout << c1.name<< " " <<  "says the number of cats is:"<< " " <<  c1.num_cats << std::endl;
     Cat c2("MeowMeow");
-    std::cout << c2.name<< " " <<  " says the number of cats is: "<< " " <<  c2.num_cats << std::endl;
+    std::cout << c2.name<< " " <<  "says the number of cats is:"<< " " <<  c2.num_cats << std::endl;
 }

@@ -1,6 +1,6 @@
 #include<string>
-#include<vector>
 #include<iostream>
+#include<vector>
 
 
 // a dog has properties and functions (things you can do with it)

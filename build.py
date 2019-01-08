@@ -9,17 +9,21 @@ from pdb import set_trace as st
 
 def transpile(python_files):
     for pyf in python_files:
-        with open(pyf) as rf:
-            tupl = Transpile(rf.readlines())  # rf.read().split('\n')
-        with open(pyf.replace('.py', '.cpp'), 'w') as wf:
-            wf.write(tupl)
+        with open(pyf) as rf0:
+            if 'if__name__==' in rf0.read().replace(' ', ''):
+                with open(pyf) as rf:
+                    tupl = Transpile(rf.readlines())  # rf.read().split('\n')
+                with open(pyf.replace('.py', '.cpp'), 'w') as wf:
+                    wf.write(tupl)
 
 
 def compile(python_file):
     name = python_file.replace('.py', '')
     build_cmd = 'g++ {}.cpp -o {} -g -O4 -std=c++14'.format(name, name)
-    print(build_cmd)
-    os.system(build_cmd)
+    with open(python_file) as rf:
+        if 'if__name__==' in rf.read().replace(' ', ''):
+            print(build_cmd)
+            os.system(build_cmd)
 
 
 def transpile_and_compile(folder, do_compile=True):
