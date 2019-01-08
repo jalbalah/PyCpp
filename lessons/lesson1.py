@@ -1,4 +1,5 @@
 
+# include code from other files
 import sys
 sys.path.append('./lessons')
 from hello import *
